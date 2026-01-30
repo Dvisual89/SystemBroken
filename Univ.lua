@@ -3589,3 +3589,6 @@ task.spawn(function()
 	end
 end)
 
+SendNotify("System Broken","Gui developed by MalwareHub - Discord in your clipboard",10)
+-- setclipboard("https://discord.gg/RkhpySwNR9")
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/H20CalibreYT/SystemBroken/main/premium"))() -- load the premium
