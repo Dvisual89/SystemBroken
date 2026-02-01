@@ -1415,6 +1415,7 @@ end)
 
 -- 🔹 INTEGRASI LOGIKA FLY SYSTEM BROKEN 🔹
 -- HAPUS SEMUA SCRIPT FLY LAMA DAN GANTI DENGAN INI
+-- HAPUS SEMUA SCRIPT FLY LAMA DAN GANTI DENGAN INI
 local Flying = false
 local FlySpeed = 100 -- Saya naikkan kecepatannya agar terasa lebih responsif
 local BodyGyro, BodyVelocity
