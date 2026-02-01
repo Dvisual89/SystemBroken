@@ -1417,11 +1417,13 @@ local BodyGyro, BodyVelocity
 local FlyConnection
 
 local function StartFlying()
+    if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
+    
     local char = player.Character
-    local root = char and char:FindFirstChild("HumanoidRootPart")
-    local hum = char and char:FindFirstChildOfClass("Humanoid")
-    if not root or not hum then return end
-
+    local root = char.HumanoidRootPart
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    local camera = workspace.CurrentCamera
+    
     Flying = true
     
     -- Membuat Body Movers dengan Nama agar mudah dihapus
@@ -1437,22 +1439,22 @@ local function StartFlying()
     bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
     bg.CFrame = root.CFrame
     bg.Parent = root
-	
-    -- Loop pergerakan halus (RunService) dari SystemBroken
+
     FlyConnection = RunService.RenderStepped:Connect(function()
-        if Flying and root and hum.Parent then
-            local camera = workspace.CurrentCamera
-            local moveDir = Vector3.new(0, 0, 0)
+        if Flying and char and root and hum then
+            -- MENGGUNAKAN MOVEDIRECTION (Support Joystick HP & WASD PC)
+            local moveDir = hum.MoveDirection 
             
-            -- Kontrol Keyboard
-            if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + camera.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - camera.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - camera.CFrame.RightVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + camera.CFrame.RightVector end
+            if moveDir.Magnitude > 0 then
+                -- Terbang mengikuti arah kamera (Melihat ke atas = Terbang ke atas)
+                bv.Velocity = camera.CFrame.LookVector * FlySpeed * (moveDir.Z < 0 and 1 or moveDir.Z > 0 and -1 or 1) 
+                bv.Velocity = bv.Velocity + (camera.CFrame.RightVector * moveDir.X * FlySpeed)
+            else
+                bv.Velocity = Vector3.new(0, 0, 0)
+            end
             
-            BodyVelocity.Velocity = moveDir * FlySpeed
-            BodyGyro.CFrame = camera.CFrame
-            hum.PlatformStand = true -- Mematikan animasi agar tidak goyang (Sama seperti SystemBroken)
+            bg.CFrame = camera.CFrame
+            hum.PlatformStand = true
         end
     end)
 end
