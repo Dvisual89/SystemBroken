@@ -1442,15 +1442,25 @@ local function StartFly()
     BodyVelocity.Parent = root
 
     -- Loop pergerakan (Mendeteksi Analog HP & Keyboard PC)
+   -- Loop pergerakan (Mendukung Naik/Turun mengikuti Kamera)
     task.spawn(function()
         while Flying do
             RunService.RenderStepped:Wait()
+            
             if BodyGyro and root then
+                -- Menjaga tubuh menghadap ke mana kamera menghadap
                 BodyGyro.CFrame = Camera.CFrame
             end
+            
             if BodyVelocity and hum then
-                -- MoveDirection adalah kunci agar support Analog HP
-                BodyVelocity.Velocity = hum.MoveDirection * FlySpeed
+                -- Jika analog digerakkan (MoveDirection > 0)
+                if hum.MoveDirection.Magnitude > 0 then
+                    -- Bergerak tepat ke arah yang dilihat kamera (termasuk naik/turun)
+                    BodyVelocity.Velocity = Camera.CFrame.LookVector * FlySpeed
+                else
+                    -- Berhenti di tempat jika analog dilepas
+                    BodyVelocity.Velocity = Vector3.new(0, 0, 0)
+                end
             end
         end
     end)
