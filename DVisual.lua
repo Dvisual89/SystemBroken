@@ -18,9 +18,6 @@ local Following = false
 local FollowConnection = nil
 local Headsitting = false
 local HeadsitConnection = nil
-local FlyActive = false
-local FlySpeed = 50
-local c_fly, bv_fly, bg_fly -- Variabel untuk menyimpan koneksi dan fisik terbang
 
 local SavedAnimations = {
     ["Idle"] = nil, ["Walk"] = nil, ["Run"] = nil,
@@ -1417,84 +1414,77 @@ end)
 local Flying = false
 local FlySpeed = 50
 local BodyGyro, BodyVelocity
+local FlyConnection
 
-local function StartFly()
+local function StartFlying()
     local char = player.Character
     local root = char and char:FindFirstChild("HumanoidRootPart")
     local hum = char and char:FindFirstChildOfClass("Humanoid")
-    
     if not root or not hum then return end
 
     Flying = true
-    hum.PlatformStand = true
-	hum.AutoRotate = false
-
-    -- Menjaga posisi tubuh agar tetap tegak mengikuti kamera
-    BodyGyro = Instance.new("BodyGyro")
-    BodyGyro.P = 500000 -- Power tinggi agar instan
-    BodyGyro.D = 100    -- Damping rendah agar tidak delay
+    
+    -- Menggunakan BodyGyro & BodyVelocity sesuai logika SystemBroken
+    BodyGyro = Instance.new("BodyGyro", root)
+    BodyGyro.P = 9e4
     BodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
     BodyGyro.CFrame = root.CFrame
-    BodyGyro.Parent = root
 
-    -- Memberikan tenaga dorong/terbang
-    BodyVelocity = Instance.new("BodyVelocity")
+    BodyVelocity = Instance.new("BodyVelocity", root)
     BodyVelocity.Velocity = Vector3.new(0, 0, 0)
     BodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-    BodyVelocity.Parent = root
 
-    -- Loop pergerakan (Mendeteksi Analog HP & Keyboard PC)
+    -- Loop pergerakan halus (RunService) dari SystemBroken
+    FlyConnection = RunService.RenderStepped:Connect(function()
+        if Flying and root and hum.Parent then
+            local camera = workspace.CurrentCamera
+            local moveDir = Vector3.new(0, 0, 0)
+            
+            -- Kontrol Keyboard
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + camera.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - camera.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - camera.CFrame.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + camera.CFrame.RightVector end
+            
+            BodyVelocity.Velocity = moveDir * FlySpeed
+            BodyGyro.CFrame = camera.CFrame
+            hum.PlatformStand = true -- Mematikan animasi agar tidak goyang (Sama seperti SystemBroken)
+        end
+    end)
+end
+
+local function StopFlying()
+    Flying = false
+    if FlyConnection then FlyConnection:Disconnect() end
+    if BodyGyro then BodyGyro:Destroy() end
+    if BodyVelocity then BodyVelocity:Destroy() end
+    if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+        player.Character:FindFirstChildOfClass("Humanoid").PlatformStand = false
+    end
+end
+
+-- Menambahkan tombol ke tab Movement (⚡) di script Anda
+if movementTabFrame then
+    local flyBtn = AddScriptButton("Fly: OFF", function()
+        if not Flying then
+            StartFlying()
+            ShowNotification("Fly Activated (SystemBroken Mode)")
+        else
+            StopFlying()
+            ShowNotification("Fly Deactivated")
+        end
+    end, movementTabFrame)
+
+    -- Loop kecil untuk update teks tombol secara otomatis
     task.spawn(function()
-        while Flying do
-            RunService.RenderStepped:Wait()
-            if BodyGyro and root then
-                BodyGyro.CFrame = Camera.CFrame
-            end
-            if BodyVelocity and hum then
-                -- MoveDirection adalah kunci agar support Analog HP
-                BodyVelocity.Velocity = hum.MoveDirection * FlySpeed
+        while task.wait(0.2) do
+            if flyBtn then
+                flyBtn.Text = Flying and "Fly: ON" or "Fly: OFF"
+                flyBtn.BackgroundColor3 = Flying and Color3.fromRGB(60, 180, 100) or Color3.fromRGB(150, 60, 255)
             end
         end
     end)
-    
-    ShowNotification("Fly: ON")
 end
-
-local function StopFly()
-    Flying = false
-    local char = player.Character
-    local hum = char and char:FindFirstChildOfClass("Humanoid")
-    
-    if BodyGyro then BodyGyro:Destroy() end
-    if BodyVelocity then BodyVelocity:Destroy() end
-    if hum then hum.PlatformStand = false end
-    
-    ShowNotification("Fly: OFF")
-end
-
--- Membuat Tombol Fly di Menu
-local flyBtn = AddScriptButton("Fly: OFF", function()
-    if Flying then 
-        StopFly() 
-    else 
-        StartFly() 
-    end
-end, movementTabFrame)
-
--- Otomatis update warna tombol Fly
-task.spawn(function()
-    while task.wait(0.2) do
-        if flyBtn then
-            flyBtn.Text = Flying and "Fly: ON (Aktif)" or "Fly: OFF"
-            flyBtn.BackgroundColor3 = Flying and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(35, 35, 35)
-        end
-    end
-end)
-
--- Tombol Penutup
-AddScriptButton("Tutup Menu", function()
-    ScreenGui:Destroy()
-end, MainFrame)
 
 --- --- --- --- --- --- --- --- --- --- --- --- ---
 -- FITUR AVATAR LIGHT (Mode Lampu)
@@ -1561,4 +1551,3 @@ if movementTabFrame then
         end
     end)
 end
-
