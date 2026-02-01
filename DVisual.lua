@@ -1426,35 +1426,34 @@ local function StartFlying()
     
     Flying = true
     
-    -- Membuat Body Movers dengan Nama agar mudah dihapus
+    -- Membuat penggerak baru (BodyVelocity)
     local bv = Instance.new("BodyVelocity")
     bv.Name = "FlyVelocity"
-    bv.Velocity = Vector3.new(0, 0, 0)
     bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    bv.Velocity = Vector3.new(0, 0.1, 0) -- Biar melayang stabil saat diam
     bv.Parent = root
     
     local bg = Instance.new("BodyGyro")
     bg.Name = "FlyGyro"
-    bg.P = 9e4
     bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
     bg.CFrame = root.CFrame
     bg.Parent = root
 
     FlyConnection = RunService.RenderStepped:Connect(function()
         if Flying and char and root and hum then
-            -- MENGGUNAKAN MOVEDIRECTION (Support Joystick HP & WASD PC)
+            -- MENGGUNAKAN MOVEDIRECTION (PENTING AGAR TIDAK STUCK)
             local moveDir = hum.MoveDirection 
             
             if moveDir.Magnitude > 0 then
-                -- Terbang mengikuti arah kamera (Melihat ke atas = Terbang ke atas)
-                bv.Velocity = camera.CFrame.LookVector * FlySpeed * (moveDir.Z < 0 and 1 or moveDir.Z > 0 and -1 or 1) 
+                -- Terbang mengikuti arah kamera (Melihat ke atas = Naik)
+                bv.Velocity = camera.CFrame.LookVector * FlySpeed * (moveDir.Z < 0 and 1 or moveDir.Z > 0 and -1 or 1)
                 bv.Velocity = bv.Velocity + (camera.CFrame.RightVector * moveDir.X * FlySpeed)
             else
-                bv.Velocity = Vector3.new(0, 0, 0)
+                bv.Velocity = Vector3.new(0, 0.1, 0) -- Tetap melayang di tempat
             end
             
             bg.CFrame = camera.CFrame
-            hum.PlatformStand = true
+            hum.PlatformStand = true -- Mematikan animasi agar mulus
         end
     end)
 end
@@ -1464,20 +1463,21 @@ local function StopFlying()
     if FlyConnection then FlyConnection:Disconnect() end
     
     local char = player.Character
-    local root = char and char:FindFirstChild("HumanoidRootPart")
-    local hum = char and char:FindFirstChildOfClass("Humanoid")
-    
-    -- Menghapus penggerak berdasarkan nama
-    if root then
-        local oldBV = root:FindFirstChild("FlyVelocity")
-        local oldBG = root:FindFirstChild("FlyGyro")
-        if oldBV then oldBV:Destroy() end
-        if oldBG then oldBG:Destroy() end
-    end
-    
-    if hum then
-        hum.PlatformStand = false -- Mengaktifkan kembali kaki karakter
-        hum:ChangeState(Enum.HumanoidStateType.GettingUp) -- Memaksa karakter berdiri
+    if char then
+        local root = char:FindFirstChild("HumanoidRootPart")
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        
+        -- Hapus penggerak
+        if root then
+            if root:FindFirstChild("FlyVelocity") then root.FlyVelocity:Destroy() end
+            if root:FindFirstChild("FlyGyro") then root.FlyGyro:Destroy() end
+        end
+        
+        -- KEMBALIKAN KONTROL KARAKTER
+        if hum then
+            hum.PlatformStand = false -- Kaki kembali berfungsi
+            hum:ChangeState(Enum.HumanoidStateType.GettingUp) -- Paksa bangun
+        end
     end
 end
 
