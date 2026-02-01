@@ -1426,42 +1426,45 @@ local function StartFlying()
     
     Flying = true
     
-    -- Membuat penggerak baru (BodyVelocity)
-    local bv = Instance.new("BodyVelocity")
-    bv.Name = "FlyVelocity"
-    bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-    bv.Velocity = Vector3.new(0, 0.1, 0) -- Biar melayang stabil saat diam
-    bv.Parent = root
+    -- Membuat Body Movers
+    local BodyVelocity = Instance.new("BodyVelocity")
+    BodyVelocity.Name = "FlyBV"
+    BodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    BodyVelocity.Velocity = Vector3.new(0, 0.1, 0)
+    BodyVelocity.Parent = root
     
-    local bg = Instance.new("BodyGyro")
-    bg.Name = "FlyGyro"
-    bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
-    bg.CFrame = root.CFrame
-    bg.Parent = root
+    local BodyGyro = Instance.new("BodyGyro")
+    BodyGyro.Name = "FlyBG"
+    BodyGyro.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+    BodyGyro.CFrame = root.CFrame
+    BodyGyro.Parent = root
 
- FlyConnection = RunService.RenderStepped:Connect(function()
-    if Flying and char and root and hum then
-        local moveDir = hum.MoveDirection 
-        
-        if moveDir.Magnitude > 0 then
-            -- MENGUBAH ARAH: 
-            -- Jika sebelumnya menggunakan (-moveDir.Z) masih terbalik, 
-            -- maka sekarang kita gunakan (moveDir.Z) secara langsung.
+    FlyConnection = RunService.RenderStepped:Connect(function()
+        if Flying and char and root and hum then
+            -- Menggunakan MoveDirection (Otomatis mendeteksi Joystick HP & WASD PC)
+            local moveDir = hum.MoveDirection 
             
-            local forward = camera.CFrame.LookVector * (moveDir.Z) -- Bagian ini dibalik
-            local side = camera.CFrame.RightVector * moveDir.X
+            if moveDir.Magnitude > 0 then
+                -- PENYESUAIAN ARAH JOYSTICK:
+                -- Kita mengambil LookVector kamera dan RightVector kamera.
+                -- Di Roblox, moveDir.Z bernilai negatif saat joystick didorong ke depan.
+                -- Jadi kita kalikan LookVector dengan -moveDir.Z agar maju ke depan.
+                local forward = camera.CFrame.LookVector * (-moveDir.Z)
+                local side = camera.CFrame.RightVector * (moveDir.X)
+                
+                -- Gabungkan arah maju dan samping, lalu kalikan dengan kecepatan
+                BodyVelocity.Velocity = (forward + side).Unit * FlySpeed
+            else
+                -- Jika joystick dilepas, karakter melayang stabil di tempat
+                BodyVelocity.Velocity = Vector3.new(0, 0.1, 0)
+            end
             
-            -- Menghitung hasil akhir arah
-            -- Gunakan minus di depan seluruh kurung jika seluruh arah (maju & samping) terbalik
-            BodyVelocity.Velocity = (forward + side).Unit * FlySpeed
-        else
-            BodyVelocity.Velocity = Vector3.new(0, 0.1, 0)
+            -- Kamera menentukan arah hadap karakter
+            BodyGyro.CFrame = camera.CFrame
+            hum.PlatformStand = true
         end
-        
-        BodyGyro.CFrame = camera.CFrame
-        hum.PlatformStand = true
-    end
-end)
+    end)
+end
 
 local function StopFlying()
     Flying = false
