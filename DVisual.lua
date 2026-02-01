@@ -1414,76 +1414,85 @@ end)
 local Flying = false
 local FlySpeed = 50
 local BodyGyro, BodyVelocity
-local FlyConnection
+local mfly1, mfly2
 
-local function StartFlying()
+-- Mengambil ControlModule untuk deteksi Analog HP yang akurat
+local PlayerModule = player.PlayerScripts:WaitForChild("PlayerModule")
+local ControlModule = require(PlayerModule:WaitForChild("ControlModule"))
+
+local function StartFly()
     local char = player.Character
     local root = char and char:FindFirstChild("HumanoidRootPart")
     local hum = char and char:FindFirstChildOfClass("Humanoid")
+    
     if not root or not hum then return end
 
     Flying = true
-    
-    -- Menggunakan BodyGyro & BodyVelocity sesuai logika SystemBroken
-    BodyGyro = Instance.new("BodyGyro", root)
-    BodyGyro.P = 9e4
+    hum.PlatformStand = true
+    hum.AutoRotate = false
+
+    -- Setup Gyro (Rotasi)
+    BodyGyro = Instance.new("BodyGyro")
+    BodyGyro.P = 500000 -- Power tinggi agar responsif
+    BodyGyro.D = 100
     BodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
     BodyGyro.CFrame = root.CFrame
+    BodyGyro.Parent = root
 
-    BodyVelocity = Instance.new("BodyVelocity", root)
+    -- Setup Velocity (Gerakan)
+    BodyVelocity = Instance.new("BodyVelocity")
     BodyVelocity.Velocity = Vector3.new(0, 0, 0)
     BodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+    BodyVelocity.Parent = root
 
-    -- Loop pergerakan halus (RunService) dari SystemBroken
-    FlyConnection = RunService.RenderStepped:Connect(function()
-        if Flying and root and hum.Parent then
-            local camera = workspace.CurrentCamera
-            local moveDir = Vector3.new(0, 0, 0)
+    -- Koneksi RenderStepped agar kontrol sangat halus (seperti script yang Anda kirim)
+    mfly2 = RunService.RenderStepped:Connect(function()
+        if Flying and root and BodyGyro and BodyVelocity and hum then
+            -- 1. Update arah karakter mengikuti kamera
+            BodyGyro.CFrame = Camera.CFrame
             
-            -- Kontrol Keyboard
-            if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + camera.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - camera.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - camera.CFrame.RightVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + camera.CFrame.RightVector end
+            -- 2. Ambil input dari Analog HP / Keyboard via ControlModule
+            local moveVector = ControlModule:GetMoveVector()
+            local cameraCF = Camera.CFrame
             
-            BodyVelocity.Velocity = moveDir * FlySpeed
-            BodyGyro.CFrame = camera.CFrame
-            hum.PlatformStand = true -- Mematikan animasi agar tidak goyang (Sama seperti SystemBroken)
+            -- 3. Logika Pergerakan:
+            -- Bergerak maju/mundur mengikuti arah pandangan kamera (termasuk NAIK/TURUN)
+            local moveDirection = (cameraCF.LookVector * -moveVector.Z) + (cameraCF.RightVector * moveVector.X)
+            
+            if moveVector.Magnitude > 0 then
+                BodyVelocity.Velocity = moveDirection * FlySpeed
+            else
+                BodyVelocity.Velocity = Vector3.new(0, 0, 0)
+            end
+        else
+            if mfly2 then mfly2:Disconnect() end
         end
     end)
+    
+    -- Reset jika karakter mati
+    mfly1 = player.CharacterAdded:Connect(function()
+        StopFly()
+    end)
+
+    ShowNotification("Fly: ON (ControlModule Mode)")
 end
 
-local function StopFlying()
+local function StopFly()
     Flying = false
-    if FlyConnection then FlyConnection:Disconnect() end
+    local char = player.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    
+    if mfly1 then mfly1:Disconnect() end
+    if mfly2 then mfly2:Disconnect() end
+    
     if BodyGyro then BodyGyro:Destroy() end
     if BodyVelocity then BodyVelocity:Destroy() end
-    if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
-        player.Character:FindFirstChildOfClass("Humanoid").PlatformStand = false
+    if hum then 
+        hum.PlatformStand = false 
+        hum.AutoRotate = true
     end
-end
-
--- Menambahkan tombol ke tab Movement (⚡) di script Anda
-if movementTabFrame then
-    local flyBtn = AddScriptButton("Fly: OFF", function()
-        if not Flying then
-            StartFlying()
-            ShowNotification("Fly Activated (SystemBroken Mode)")
-        else
-            StopFlying()
-            ShowNotification("Fly Deactivated")
-        end
-    end, movementTabFrame)
-
-    -- Loop kecil untuk update teks tombol secara otomatis
-    task.spawn(function()
-        while task.wait(0.2) do
-            if flyBtn then
-                flyBtn.Text = Flying and "Fly: ON" or "Fly: OFF"
-                flyBtn.BackgroundColor3 = Flying and Color3.fromRGB(60, 180, 100) or Color3.fromRGB(150, 60, 255)
-            end
-        end
-    end)
+    
+    ShowNotification("Fly: OFF")
 end
 
 --- --- --- --- --- --- --- --- --- --- --- --- ---
