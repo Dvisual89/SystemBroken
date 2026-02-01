@@ -1426,57 +1426,57 @@ local function StartFlying()
     
     Flying = true
     
-    -- Membuat Body Movers
+    -- Membuat penggerak
     local BodyVelocity = Instance.new("BodyVelocity")
+    BodyVelocity.Name = "FlyBV"
     BodyVelocity.Velocity = Vector3.new(0, 0, 0)
     BodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
     BodyVelocity.Parent = root
     
     local BodyGyro = Instance.new("BodyGyro")
+    BodyGyro.Name = "FlyBG"
     BodyGyro.P = 9e4
     BodyGyro.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
     BodyGyro.CFrame = root.CFrame
     BodyGyro.Parent = root
 
     FlyConnection = RunService.RenderStepped:Connect(function()
-    if Flying and char and root and hum then
-        -- Deteksi input arah (Joystick HP atau WASD PC)
-        local moveDir = hum.MoveDirection 
-        
-        if moveDir.Magnitude > 0 then
-            -- LOGIKA BARU: Terbang mengikuti arah kamera (Naik/Turun)
-            -- Ini membuat kamu bisa naik hanya dengan melihat ke atas sambil maju
-            BodyVelocity.Velocity = camera.CFrame.LookVector * FlySpeed * (moveDir.Z < 0 and 1 or moveDir.Z > 0 and -1 or 1) 
-            -- Tambahkan pergerakan samping (A/D atau Joystick kiri/kanan)
-            BodyVelocity.Velocity = BodyVelocity.Velocity + (camera.CFrame.RightVector * moveDir.X * FlySpeed)
-        else
-            -- Jika diam, kunci posisi agar tidak jatuh atau melayang liar
-            BodyVelocity.Velocity = Vector3.new(0, 0, 0)
+        if Flying and char and root and hum then
+            -- MoveDirection mendeteksi Joystick (HP) dan WASD (PC)
+            local moveDir = hum.MoveDirection 
+            
+            if moveDir.Magnitude > 0 then
+                -- Terbang ke arah kamera (Bisa Naik/Turun dengan melihat ke atas/bawah)
+                BodyVelocity.Velocity = camera.CFrame.LookVector * FlySpeed * (moveDir.Z < 0 and 1 or moveDir.Z > 0 and -1 or 1) 
+                BodyVelocity.Velocity = BodyVelocity.Velocity + (camera.CFrame.RightVector * moveDir.X * FlySpeed)
+            else
+                BodyVelocity.Velocity = Vector3.new(0, 0, 0) -- Melayang diam
+            end
+            
+            BodyGyro.CFrame = camera.CFrame
+            hum.PlatformStand = true
         end
-        
-        BodyGyro.CFrame = camera.CFrame
-        hum.PlatformStand = true
-    end
-end)
+    end)
+end
 
 local function StopFlying()
     Flying = false
     if FlyConnection then FlyConnection:Disconnect() end
     
-    -- Hapus semua penggerak paksa
-    local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    local char = player.Character
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    
+    -- Membersihkan penggerak agar tidak STUCK
     if root then
-        if root:FindFirstChild("BodyVelocity") then root.BodyVelocity:Destroy() end
-        if root:FindFirstChild("BodyGyro") then root.BodyGyro:Destroy() end
+        if root:FindFirstChild("FlyBV") then root.FlyBV:Destroy() end
+        if root:FindFirstChild("FlyBG") then root.FlyBG:Destroy() end
     end
     
-    -- MENGEMBALIKAN FISIKA (Penting!)
-    local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
     if hum then
-        hum.PlatformStand = false -- Mengaktifkan kembali kaki karakter
-        hum:ChangeState(Enum.HumanoidStateType.FallingDown) -- Memaksa jatuh jika di udara
+        hum.PlatformStand = false -- Mengembalikan kontrol karakter
+        hum:ChangeState(Enum.HumanoidStateType.GettingUp)
     end
-    ShowNotification("Fly Deactivated")
 end
 
 -- Menambahkan tombol ke tab Movement (⚡) di script Anda
