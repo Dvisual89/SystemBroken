@@ -1417,38 +1417,44 @@ local BodyGyro, BodyVelocity
 local FlyConnection
 
 local function StartFlying()
+    if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
+    
     local char = player.Character
-    local root = char and char:FindFirstChild("HumanoidRootPart")
-    local hum = char and char:FindFirstChildOfClass("Humanoid")
-    if not root or not hum then return end
-
+    local root = char.HumanoidRootPart
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    local camera = workspace.CurrentCamera
+    
     Flying = true
     
-    -- Menggunakan BodyGyro & BodyVelocity sesuai logika SystemBroken
-    BodyGyro = Instance.new("BodyGyro", root)
-    BodyGyro.P = 9e4
-    BodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-    BodyGyro.CFrame = root.CFrame
-
-    BodyVelocity = Instance.new("BodyVelocity", root)
+    -- Membuat Body Movers
+    local BodyVelocity = Instance.new("BodyVelocity")
     BodyVelocity.Velocity = Vector3.new(0, 0, 0)
-    BodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+    BodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    BodyVelocity.Parent = root
+    
+    local BodyGyro = Instance.new("BodyGyro")
+    BodyGyro.P = 9e4
+    BodyGyro.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+    BodyGyro.CFrame = root.CFrame
+    BodyGyro.Parent = root
 
-    -- Loop pergerakan halus (RunService) dari SystemBroken
     FlyConnection = RunService.RenderStepped:Connect(function()
-        if Flying and root and hum.Parent then
-            local camera = workspace.CurrentCamera
-            local moveDir = Vector3.new(0, 0, 0)
+        if Flying and char and root and hum then
+            -- PERBAIKAN UNTUK HP & PC:
+            -- Menggunakan MoveDirection agar joystick HP terdeteksi
+            local moveDir = hum.MoveDirection 
             
-            -- Kontrol Keyboard
-            if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + camera.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - camera.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - camera.CFrame.RightVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + camera.CFrame.RightVector end
+            -- Logika khusus untuk naik (Space di PC / Tombol Lompat HP)
+            -- Jika sedang tidak bergerak, tetap melayang di tempat
+            if moveDir.Magnitude > 0 then
+                BodyVelocity.Velocity = moveDir * FlySpeed
+            else
+                BodyVelocity.Velocity = Vector3.new(0, 0.1, 0) -- Melayang stabil
+            end
             
-            BodyVelocity.Velocity = moveDir * FlySpeed
+            -- Kamera mengikuti arah pandangan
             BodyGyro.CFrame = camera.CFrame
-            hum.PlatformStand = true -- Mematikan animasi agar tidak goyang (Sama seperti SystemBroken)
+            hum.PlatformStand = true
         end
     end)
 end
