@@ -1439,30 +1439,27 @@ local function StartFlying()
     bg.CFrame = root.CFrame
     bg.Parent = root
 
-    FlyConnection = RunService.RenderStepped:Connect(function()
+ FlyConnection = RunService.RenderStepped:Connect(function()
     if Flying and char and root and hum then
-        -- Mendeteksi arah dari Joystick (HP) atau WASD (PC)
+        -- Ambil arah gerakan joystick/WASD
         local moveDir = hum.MoveDirection 
         
         if moveDir.Magnitude > 0 then
-            -- PERBAIKAN ARAH:
-            -- Kita menggunakan CFrame kamera untuk menentukan arah depan/belakang dan kiri/kanan
-            local lookVec = camera.CFrame.LookVector
-            local rightVec = camera.CFrame.RightVector
+            -- MENGHITUNG ARAH YANG BENAR
+            -- Di PC/HP, joystick maju berarti moveDir.Z adalah negatif.
+            -- Maka kita gunakan -moveDir.Z agar searah dengan LookVector kamera.
             
-            -- Menghitung arah berdasarkan input joystick
-            -- moveDir.Z negatif biasanya berarti "ke depan" pada joystick/W
-            -- moveDir.X berarti samping kanan/kiri
-            local forwardMovement = lookVec * (-moveDir.Z) -- Dibalik agar sesuai
-            local sideMovement = rightVec * moveDir.X
+            local forward = camera.CFrame.LookVector * (-moveDir.Z) 
+            local side = camera.CFrame.RightVector * moveDir.X
             
-            -- Gabungkan dan kalikan dengan kecepatan
-            BodyVelocity.Velocity = (forwardMovement + sideMovement).Unit * FlySpeed
+            -- Gabungkan arah maju dan samping, lalu kalikan dengan FlySpeed
+            BodyVelocity.Velocity = (forward + side).Unit * FlySpeed
         else
-            -- Melayang stabil di tempat saat joystick dilepas
+            -- Jika joystick dilepas, tetap melayang di posisi terakhir
             BodyVelocity.Velocity = Vector3.new(0, 0.1, 0)
         end
         
+        -- Karakter selalu menghadap ke arah kamera
         BodyGyro.CFrame = camera.CFrame
         hum.PlatformStand = true
     end
