@@ -1440,23 +1440,33 @@ local function StartFlying()
     bg.Parent = root
 
     FlyConnection = RunService.RenderStepped:Connect(function()
-        if Flying and char and root and hum then
-            -- MENGGUNAKAN MOVEDIRECTION (PENTING AGAR TIDAK STUCK)
-            local moveDir = hum.MoveDirection 
+    if Flying and char and root and hum then
+        -- Mendeteksi arah dari Joystick (HP) atau WASD (PC)
+        local moveDir = hum.MoveDirection 
+        
+        if moveDir.Magnitude > 0 then
+            -- PERBAIKAN ARAH:
+            -- Kita menggunakan CFrame kamera untuk menentukan arah depan/belakang dan kiri/kanan
+            local lookVec = camera.CFrame.LookVector
+            local rightVec = camera.CFrame.RightVector
             
-            if moveDir.Magnitude > 0 then
-                -- Terbang mengikuti arah kamera (Melihat ke atas = Naik)
-                bv.Velocity = camera.CFrame.LookVector * FlySpeed * (moveDir.Z < 0 and 1 or moveDir.Z > 0 and -1 or 1)
-                bv.Velocity = bv.Velocity + (camera.CFrame.RightVector * moveDir.X * FlySpeed)
-            else
-                bv.Velocity = Vector3.new(0, 0.1, 0) -- Tetap melayang di tempat
-            end
+            -- Menghitung arah berdasarkan input joystick
+            -- moveDir.Z negatif biasanya berarti "ke depan" pada joystick/W
+            -- moveDir.X berarti samping kanan/kiri
+            local forwardMovement = lookVec * (-moveDir.Z) -- Dibalik agar sesuai
+            local sideMovement = rightVec * moveDir.X
             
-            bg.CFrame = camera.CFrame
-            hum.PlatformStand = true -- Mematikan animasi agar mulus
+            -- Gabungkan dan kalikan dengan kecepatan
+            BodyVelocity.Velocity = (forwardMovement + sideMovement).Unit * FlySpeed
+        else
+            -- Melayang stabil di tempat saat joystick dilepas
+            BodyVelocity.Velocity = Vector3.new(0, 0.1, 0)
         end
-    end)
-end
+        
+        BodyGyro.CFrame = camera.CFrame
+        hum.PlatformStand = true
+    end
+end)
 
 local function StopFlying()
     Flying = false
