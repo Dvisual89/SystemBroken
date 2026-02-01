@@ -1417,51 +1417,38 @@ local BodyGyro, BodyVelocity
 local FlyConnection
 
 local function StartFlying()
-    if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
-    
     local char = player.Character
-    local root = char.HumanoidRootPart
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    local camera = workspace.CurrentCamera
-    
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    if not root or not hum then return end
+
     Flying = true
     
-    -- Membuat Body Movers
-    local BodyVelocity = Instance.new("BodyVelocity")
-    BodyVelocity.Name = "FlyBV"
-    BodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-    BodyVelocity.Velocity = Vector3.new(0, 0.1, 0)
-    BodyVelocity.Parent = root
-    
-    local BodyGyro = Instance.new("BodyGyro")
-    BodyGyro.Name = "FlyBG"
-    BodyGyro.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+    -- Menggunakan BodyGyro & BodyVelocity sesuai logika SystemBroken
+    BodyGyro = Instance.new("BodyGyro", root)
+    BodyGyro.P = 9e4
+    BodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
     BodyGyro.CFrame = root.CFrame
-    BodyGyro.Parent = root
 
+    BodyVelocity = Instance.new("BodyVelocity", root)
+    BodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    BodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+
+    -- Loop pergerakan halus (RunService) dari SystemBroken
     FlyConnection = RunService.RenderStepped:Connect(function()
-        if Flying and char and root and hum then
-            -- Menggunakan MoveDirection (Otomatis mendeteksi Joystick HP & WASD PC)
-            local moveDir = hum.MoveDirection 
+        if Flying and root and hum.Parent then
+            local camera = workspace.CurrentCamera
+            local moveDir = Vector3.new(0, 0, 0)
             
-            if moveDir.Magnitude > 0 then
-                -- PENYESUAIAN ARAH JOYSTICK:
-                -- Kita mengambil LookVector kamera dan RightVector kamera.
-                -- Di Roblox, moveDir.Z bernilai negatif saat joystick didorong ke depan.
-                -- Jadi kita kalikan LookVector dengan -moveDir.Z agar maju ke depan.
-                local forward = camera.CFrame.LookVector * (-moveDir.Z)
-                local side = camera.CFrame.RightVector * (moveDir.X)
-                
-                -- Gabungkan arah maju dan samping, lalu kalikan dengan kecepatan
-                BodyVelocity.Velocity = (forward + side).Unit * FlySpeed
-            else
-                -- Jika joystick dilepas, karakter melayang stabil di tempat
-                BodyVelocity.Velocity = Vector3.new(0, 0.1, 0)
-            end
+            -- Kontrol Keyboard
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + camera.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - camera.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - camera.CFrame.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + camera.CFrame.RightVector end
             
-            -- Kamera menentukan arah hadap karakter
+            BodyVelocity.Velocity = moveDir * FlySpeed
             BodyGyro.CFrame = camera.CFrame
-            hum.PlatformStand = true
+            hum.PlatformStand = true -- Mematikan animasi agar tidak goyang (Sama seperti SystemBroken)
         end
     end)
 end
@@ -1469,23 +1456,10 @@ end
 local function StopFlying()
     Flying = false
     if FlyConnection then FlyConnection:Disconnect() end
-    
-    local char = player.Character
-    if char then
-        local root = char:FindFirstChild("HumanoidRootPart")
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        
-        -- Hapus penggerak
-        if root then
-            if root:FindFirstChild("FlyVelocity") then root.FlyVelocity:Destroy() end
-            if root:FindFirstChild("FlyGyro") then root.FlyGyro:Destroy() end
-        end
-        
-        -- KEMBALIKAN KONTROL KARAKTER
-        if hum then
-            hum.PlatformStand = false -- Kaki kembali berfungsi
-            hum:ChangeState(Enum.HumanoidStateType.GettingUp) -- Paksa bangun
-        end
+    if BodyGyro then BodyGyro:Destroy() end
+    if BodyVelocity then BodyVelocity:Destroy() end
+    if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+        player.Character:FindFirstChildOfClass("Humanoid").PlatformStand = false
     end
 end
 
