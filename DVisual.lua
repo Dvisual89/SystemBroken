@@ -1411,94 +1411,79 @@ player.CharacterAdded:Connect(function(newChar)
 end)
 
 -- 🔹 INTEGRASI LOGIKA FLY SYSTEM BROKEN 🔹
+-- Variabel Fly
 local Flying = false
 local FlySpeed = 50
-local BodyGyro, BodyVelocity
-local FlyConnection
+local FlyConnection = nil
+local KeysPressed = {W = false, S = false, A = false, D = false, Q = false, E = false}
 
-local PlayerModule = player.PlayerScripts:WaitForChild("PlayerModule")
-local ControlModule = require(PlayerModule:WaitForChild("ControlModule"))
-
-local function StartFlying()
+-- Fungsi Fly
+local function ToggleFly()
+    Flying = not Flying
     local char = player.Character
     local root = char and char:FindFirstChild("HumanoidRootPart")
-    local hum = char and char:FindFirstChildOfClass("Humanoid")
-    if not root or not hum then return end
-
-    Flying = true
-	hum.PlatformStand = true
-    hum.AutoRotate = false
+    local humanoid = char and char:FindFirstChildOfClass("Humanoid")
     
-    -- Setup Gyro (Keseimbangan & Rotasi)
-    BodyGyro = Instance.new("BodyGyro")
-    BodyGyro.P = 500000 
-    BodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-    BodyGyro.CFrame = root.CFrame
-    BodyGyro.Parent = roote
+    if Flying and root and humanoid then
+        humanoid.PlatformStand = true
+        local bg = Instance.new("BodyGyro", root)
+        bg.P = 9e4
+        bg.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+        bg.CFrame = root.CFrame
+        bg.Name = "FlyGyro"
 
-    -- Setup Velocity (Daya Dorong)
-    BodyVelocity = Instance.new("BodyVelocity")
-    BodyVelocity.Velocity = Vector3.new(0, 0, 0)
-    BodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-    BodyVelocity.Parent = root
+        local bv = Instance.new("BodyVelocity", root)
+        bv.Velocity = Vector3.new(0, 0, 0)
+        bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+        bv.Name = "FlyVelocity"
 
-    -- Loop pergerakan halus (RunService) dari SystemBroken
-    task.spawn(function()
-        while Flying do
-            RunService.RenderStepped:Wait()
+        FlyConnection = RunService.RenderStepped:Connect(function()
+            local direction = Vector3.new(0, 0, 0)
+            local camCF = Camera.CFrame
             
-            if BodyGyro and root then
-                BodyGyro.CFrame = Camera.CFrame
-            end
+            -- Kontrol Horizontal (W,A,S,D)
+            if KeysPressed.W then direction = direction + camCF.LookVector end
+            if KeysPressed.S then direction = direction - camCF.LookVector end
+            if KeysPressed.A then direction = direction - camCF.RightVector end
+            if KeysPressed.D then direction = direction + camCF.RightVector end
             
-            if BodyVelocity and hum then
-                -- INI BAGIAN KONTROLNYA:
-                local direction = ControlModule:GetMoveVector()
-                local cameraCF = Camera.CFrame
-                
-                -- Kalkulasi arah berdasarkan input analog dan arah kamera
-                local moveDirection = (cameraCF.LookVector * -direction.Z) + (cameraCF.RightVector * direction.X)
-                
-                if direction.Magnitude > 0 then
-                    BodyVelocity.Velocity = moveDirection * FlySpeed
-                else
-                    BodyVelocity.Velocity = Vector3.new(0, 0, 0)
-                end
-            end
+            -- Kontrol Vertikal (Q = Turun, E = Naik)
+            if KeysPressed.E then direction = direction + Vector3.new(0, 1, 0) end -- Naik
+            if KeysPressed.Q then direction = direction - Vector3.new(0, 1, 0) end -- Turun
+
+            bv.Velocity = direction.Unit * FlySpeed
+            if direction.Magnitude == 0 then bv.Velocity = Vector3.new(0, 0.1, 0) end
+            bg.CFrame = camCF
+        end)
+        ShowNotification("Fly: ON")
+    else
+        if FlyConnection then FlyConnection:Disconnect() end
+        if root then
+            if root:FindFirstChild("FlyGyro") then root.FlyGyro:Destroy() end
+            if root:FindFirstChild("FlyVelocity") then root.FlyVelocity:Destroy() end
         end
-    end)
-
-local function StopFlying()
-    Flying = false
-    if FlyConnection then FlyConnection:Disconnect() end
-    if BodyGyro then BodyGyro:Destroy() end
-    if BodyVelocity then BodyVelocity:Destroy() end
-    if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
-        player.Character:FindFirstChildOfClass("Humanoid").PlatformStand = false
+        if humanoid then humanoid.PlatformStand = false end
+        ShowNotification("Fly: OFF")
     end
 end
 
--- Menambahkan tombol ke tab Movement (⚡) di script Anda
-if movementTabFrame then
-    local flyBtn = AddScriptButton("Fly: OFF", function()
-        if not Flying then
-            StartFlying()
-            ShowNotification("Fly Activated (SystemBroken Mode)")
-        else
-            StopFlying()
-            ShowNotification("Fly Deactivated")
-        end
-    end, movementTabFrame)
+-- Deteksi Tombol
+UserInputService.InputBegan:Connect(function(input, gpe)
+    if gpe then return end
+    local key = input.KeyCode.Name
+    if KeysPressed[key] ~= nil then KeysPressed[key] = true end
+end)
 
-    -- Loop kecil untuk update teks tombol secara otomatis
-    task.spawn(function()
-        while task.wait(0.2) do
-            if flyBtn then
-                flyBtn.Text = Flying and "Fly: ON" or "Fly: OFF"
-                flyBtn.BackgroundColor3 = Flying and Color3.fromRGB(60, 180, 100) or Color3.fromRGB(150, 60, 255)
-            end
-        end
-    end)
+UserInputService.InputEnded:Connect(function(input)
+    local key = input.KeyCode.Name
+    if KeysPressed[key] ~= nil then KeysPressed[key] = false end
+end)
+
+-- Menambahkan tombol Fly ke Movement Tab (Skrip yang sudah ada)
+if movementTabFrame then
+    AddScriptButton("Toggle Fly", function()
+        ToggleFly()
+    end, movementTabFrame)
 end
 
 --- --- --- --- --- --- --- --- --- --- --- --- ---
