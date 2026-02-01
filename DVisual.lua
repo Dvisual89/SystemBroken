@@ -1439,34 +1439,44 @@ local function StartFlying()
     BodyGyro.Parent = root
 
     FlyConnection = RunService.RenderStepped:Connect(function()
-        if Flying and char and root and hum then
-            -- PERBAIKAN UNTUK HP & PC:
-            -- Menggunakan MoveDirection agar joystick HP terdeteksi
-            local moveDir = hum.MoveDirection 
-            
-            -- Logika khusus untuk naik (Space di PC / Tombol Lompat HP)
-            -- Jika sedang tidak bergerak, tetap melayang di tempat
-            if moveDir.Magnitude > 0 then
-                BodyVelocity.Velocity = moveDir * FlySpeed
-            else
-                BodyVelocity.Velocity = Vector3.new(0, 0.1, 0) -- Melayang stabil
-            end
-            
-            -- Kamera mengikuti arah pandangan
-            BodyGyro.CFrame = camera.CFrame
-            hum.PlatformStand = true
+    if Flying and char and root and hum then
+        -- Deteksi input arah (Joystick HP atau WASD PC)
+        local moveDir = hum.MoveDirection 
+        
+        if moveDir.Magnitude > 0 then
+            -- LOGIKA BARU: Terbang mengikuti arah kamera (Naik/Turun)
+            -- Ini membuat kamu bisa naik hanya dengan melihat ke atas sambil maju
+            BodyVelocity.Velocity = camera.CFrame.LookVector * FlySpeed * (moveDir.Z < 0 and 1 or moveDir.Z > 0 and -1 or 1) 
+            -- Tambahkan pergerakan samping (A/D atau Joystick kiri/kanan)
+            BodyVelocity.Velocity = BodyVelocity.Velocity + (camera.CFrame.RightVector * moveDir.X * FlySpeed)
+        else
+            -- Jika diam, kunci posisi agar tidak jatuh atau melayang liar
+            BodyVelocity.Velocity = Vector3.new(0, 0, 0)
         end
-    end)
-end
+        
+        BodyGyro.CFrame = camera.CFrame
+        hum.PlatformStand = true
+    end
+end)
 
 local function StopFlying()
     Flying = false
     if FlyConnection then FlyConnection:Disconnect() end
-    if BodyGyro then BodyGyro:Destroy() end
-    if BodyVelocity then BodyVelocity:Destroy() end
-    if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
-        player.Character:FindFirstChildOfClass("Humanoid").PlatformStand = false
+    
+    -- Hapus semua penggerak paksa
+    local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if root then
+        if root:FindFirstChild("BodyVelocity") then root.BodyVelocity:Destroy() end
+        if root:FindFirstChild("BodyGyro") then root.BodyGyro:Destroy() end
     end
+    
+    -- MENGEMBALIKAN FISIKA (Penting!)
+    local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum.PlatformStand = false -- Mengaktifkan kembali kaki karakter
+        hum:ChangeState(Enum.HumanoidStateType.FallingDown) -- Memaksa jatuh jika di udara
+    end
+    ShowNotification("Fly Deactivated")
 end
 
 -- Menambahkan tombol ke tab Movement (⚡) di script Anda
