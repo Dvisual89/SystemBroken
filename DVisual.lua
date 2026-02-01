@@ -1424,16 +1424,20 @@ local function StartFlying()
 
     Flying = true
     
-    -- Menggunakan BodyGyro & BodyVelocity sesuai logika SystemBroken
-    BodyGyro = Instance.new("BodyGyro", root)
-    BodyGyro.P = 9e4
-    BodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-    BodyGyro.CFrame = root.CFrame
-
-    BodyVelocity = Instance.new("BodyVelocity", root)
-    BodyVelocity.Velocity = Vector3.new(0, 0, 0)
-    BodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-
+    -- Membuat Body Movers dengan Nama agar mudah dihapus
+    local bv = Instance.new("BodyVelocity")
+    bv.Name = "FlyVelocity"
+    bv.Velocity = Vector3.new(0, 0, 0)
+    bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    bv.Parent = root
+    
+    local bg = Instance.new("BodyGyro")
+    bg.Name = "FlyGyro"
+    bg.P = 9e4
+    bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+    bg.CFrame = root.CFrame
+    bg.Parent = root
+	
     -- Loop pergerakan halus (RunService) dari SystemBroken
     FlyConnection = RunService.RenderStepped:Connect(function()
         if Flying and root and hum.Parent then
