@@ -1441,25 +1441,23 @@ local function StartFlying()
 
  FlyConnection = RunService.RenderStepped:Connect(function()
     if Flying and char and root and hum then
-        -- Ambil arah gerakan joystick/WASD
         local moveDir = hum.MoveDirection 
         
         if moveDir.Magnitude > 0 then
-            -- MENGHITUNG ARAH YANG BENAR
-            -- Di PC/HP, joystick maju berarti moveDir.Z adalah negatif.
-            -- Maka kita gunakan -moveDir.Z agar searah dengan LookVector kamera.
+            -- MENGUBAH ARAH: 
+            -- Jika sebelumnya menggunakan (-moveDir.Z) masih terbalik, 
+            -- maka sekarang kita gunakan (moveDir.Z) secara langsung.
             
-            local forward = camera.CFrame.LookVector * (-moveDir.Z) 
+            local forward = camera.CFrame.LookVector * (moveDir.Z) -- Bagian ini dibalik
             local side = camera.CFrame.RightVector * moveDir.X
             
-            -- Gabungkan arah maju dan samping, lalu kalikan dengan FlySpeed
+            -- Menghitung hasil akhir arah
+            -- Gunakan minus di depan seluruh kurung jika seluruh arah (maju & samping) terbalik
             BodyVelocity.Velocity = (forward + side).Unit * FlySpeed
         else
-            -- Jika joystick dilepas, tetap melayang di posisi terakhir
             BodyVelocity.Velocity = Vector3.new(0, 0.1, 0)
         end
         
-        -- Karakter selalu menghadap ke arah kamera
         BodyGyro.CFrame = camera.CFrame
         hum.PlatformStand = true
     end
