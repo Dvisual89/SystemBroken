@@ -1414,8 +1414,9 @@ player.CharacterAdded:Connect(function(newChar)
 end)
 
 -- 🔹 INTEGRASI LOGIKA FLY SYSTEM BROKEN 🔹
+-- HAPUS SEMUA SCRIPT FLY LAMA DAN GANTI DENGAN INI
 local Flying = false
-local FlySpeed = 50
+local FlySpeed = 100 -- Saya naikkan kecepatannya agar terasa lebih responsif
 local BodyGyro, BodyVelocity
 
 local function StartFly()
@@ -1426,46 +1427,54 @@ local function StartFly()
     if not root or not hum then return end
 
     Flying = true
-    hum.PlatformStand = true
+    hum.PlatformStand = true 
+    hum.AutoRotate = false -- MATIKAN INI agar respon putaran kamera instan
 
-    -- Menjaga posisi tubuh agar tetap tegak mengikuti kamera
+    -- Setup Gyro agar karakter mengikuti kamera tanpa delay
     BodyGyro = Instance.new("BodyGyro")
-    BodyGyro.P = 9e4
+    BodyGyro.P = 100000 -- Menambah kekuatan respon putaran
     BodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
     BodyGyro.CFrame = root.CFrame
     BodyGyro.Parent = root
 
-    -- Memberikan tenaga dorong/terbang
+    -- Setup Velocity untuk pergerakan instan
     BodyVelocity = Instance.new("BodyVelocity")
     BodyVelocity.Velocity = Vector3.new(0, 0, 0)
     BodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
     BodyVelocity.Parent = root
 
-    -- Loop pergerakan (Mendeteksi Analog HP & Keyboard PC)
-   -- Loop pergerakan (Mendukung Naik/Turun mengikuti Kamera)
+    -- LOOP UTAMA (Sangat Responsif)
     task.spawn(function()
         while Flying do
-            RunService.RenderStepped:Wait()
+            -- Menggunakan Heartbeat agar gerakan lebih mulus daripada RenderStepped
+            RunService.Heartbeat:Wait()
             
             if BodyGyro and root then
-                -- Menjaga tubuh menghadap ke mana kamera menghadap
                 BodyGyro.CFrame = Camera.CFrame
             end
             
             if BodyVelocity and hum then
-                -- Jika analog digerakkan (MoveDirection > 0)
-                if hum.MoveDirection.Magnitude > 0 then
-                    -- Bergerak tepat ke arah yang dilihat kamera (termasuk naik/turun)
-                    BodyVelocity.Velocity = Camera.CFrame.LookVector * FlySpeed
+                -- Deteksi arah analog/keyboard
+                local moveDir = hum.MoveDirection
+                
+                if moveDir.Magnitude > 0 then
+                    -- Rumus agar bisa naik/turun mengikuti kemiringan kamera secara instan
+                    BodyVelocity.Velocity = Camera.CFrame.LookVector * (FlySpeed * 1.5)
                 else
-                    -- Berhenti di tempat jika analog dilepas
+                    -- Langsung berhenti (tidak meluncur pelan)
                     BodyVelocity.Velocity = Vector3.new(0, 0, 0)
                 end
+            end
+            
+            -- Jika karakter respawn, matikan fly agar tidak error
+            if not char or not char:Parent() then
+                StopFly()
+                break
             end
         end
     end)
     
-    ShowNotification("Fly: ON")
+    ShowNotification("Fly: ON (Responsive)")
 end
 
 local function StopFly()
@@ -1475,7 +1484,10 @@ local function StopFly()
     
     if BodyGyro then BodyGyro:Destroy() end
     if BodyVelocity then BodyVelocity:Destroy() end
-    if hum then hum.PlatformStand = false end
+    if hum then 
+        hum.PlatformStand = false 
+        hum.AutoRotate = true -- Kembalikan kontrol rotasi normal
+    end
     
     ShowNotification("Fly: OFF")
 end
