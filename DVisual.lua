@@ -1427,10 +1427,12 @@ local function StartFly()
 
     Flying = true
     hum.PlatformStand = true
+	hum.AutoRotate = false
 
     -- Menjaga posisi tubuh agar tetap tegak mengikuti kamera
     BodyGyro = Instance.new("BodyGyro")
-    BodyGyro.P = 9e4
+    BodyGyro.P = 500000 -- Power tinggi agar instan
+    BodyGyro.D = 100    -- Damping rendah agar tidak delay
     BodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
     BodyGyro.CFrame = root.CFrame
     BodyGyro.Parent = root
