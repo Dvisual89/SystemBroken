@@ -1462,10 +1462,22 @@ end
 local function StopFlying()
     Flying = false
     if FlyConnection then FlyConnection:Disconnect() end
-    if BodyGyro then BodyGyro:Destroy() end
-    if BodyVelocity then BodyVelocity:Destroy() end
-    if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
-        player.Character:FindFirstChildOfClass("Humanoid").PlatformStand = false
+    
+    local char = player.Character
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    
+    -- Menghapus penggerak berdasarkan nama
+    if root then
+        local oldBV = root:FindFirstChild("FlyVelocity")
+        local oldBG = root:FindFirstChild("FlyGyro")
+        if oldBV then oldBV:Destroy() end
+        if oldBG then oldBG:Destroy() end
+    end
+    
+    if hum then
+        hum.PlatformStand = false -- Mengaktifkan kembali kaki karakter
+        hum:ChangeState(Enum.HumanoidStateType.GettingUp) -- Memaksa karakter berdiri
     end
 end
 
