@@ -571,10 +571,10 @@ local AnimationData = {
         ["Robot"] = "616090535", ["Patrol"] = "1148811837", ["Adidas Community"] = "75290611992385", ["Levitation"] = "616008936", ["Catwalk Glam"] = "116936326516985", ["Knight"] = "910016857", ["Pirate"] = "750782230", ["Bold"] = "16738336650", ["Sports (Adidas)"] = "18537380791", ["Zombie"] = "616161997", ["Astronaut"] = "891627522", ["Cartoony"] = "742637942", ["Ninja"] = "656117878", ["Confident"] = "1069984524", ["Wicked \"Dancing Through Life\""] = "78508480717326", ["Unboxed By Amazon"] = "121454505477205", ["R6"] = "12520880485", ["R15 Reanimated"] = "4211219390", ["Ghost"] = "616008936", ["Rthro"] = "10921263860", ["No Boundaries (Walmart)"] = "18747069148", ["Werewolf"] = "1083218792", ["Cowboy"] = "1014394726", ["UGC"] = "91788124131212", ["[VOTE] Animal"] = "131203832825082", ["Popstar"] = "1212954642", ["Mage"] = "10921149743", ["Sneaky"] = "1132489853", ["Superhero"] = "10921294559", ["Elder"] = "10921107367", ["(UGC) Retro"] = "139390570947836", ["NFL"] = "119846112151352", ["OldSchool"] = "10921242013", ["Stylized Female"] = "4708188025", ["Stylish"] = "616139451", ["Bubbly"] = "910016857", ["[VOTE] Float"] = "75611679208549", ["[VOTE] Aura"] = "93382302369459", ["Vampire"] = "1083455352", ["Wicked (Popular)"] = "104325245285198", ["Toy"] = "10921308158", ["Default Retarget"] = "117150377950987", ["Princess"] = "941008832", ["[UGC] happy"] = "72388373557525"
     },
     ["Fall"] = {
-        ["Robot"] = "616087089", ["Patrol"] = "1148863382", ["Levitation"] = "616005863", ["Pirate"] = "750780242", ["Zombie"] = "616157476", ["Astronaut"] = "891617961", ["Cartoony"] = "742637151", ["Ninja"] = "656115606", ["Confident"] = "1069973677", ["R15 Reanimated"] = "4211216152", ["Werewolf"] = "1083189019", ["Mage"] = "707829716", ["OldSchool"] = "10921241244", ["Sneaky"] = "1132469004", ["Elder"] = "10921105765", ["Bubbly"] = "910001910", ["Vampire"] = "1083443587", ["Superhero"] = "10921293373", ["Toy"] = "782846423", ["Princess"] = "941000007", ["Cowboy"] = "1014384571"
-    },
+        ["Robot"] = "616087089", ["Patrol"] = "1148863382", ["Adidas Community"] = "98600215928904", ["Levitation"] = "616005863", ["Catwalk Glam"] = "92294537340807", ["Knight"] = "10921122579", ["Pirate"] = "750780242", ["Bold"] = "16738333171", ["Sports (Adidas)"] = "18537367238", ["Zombie"] = "616157476", ["Astronaut"] = "891617961", ["Cartoony"] = "742637151", ["Ninja"] = "656115606", ["Confident"] = "1069973677", ["Wicked \"Dancing Through Life\""] = "78147885297412", ["Unboxed By Amazon"] = "94788218468396", ["R6"] = "12520972571", ["[UGC] skydiving"] = "102674302534126", ["R15 Reanimated"] = "4211216152", ["Rthro"] = "10921262864", ["No Boundaries (Walmart)"] = "18747062535", ["Werewolf"] = "1083189019", ["[VOTE] TPose"] = "139027266704971", ["Mage"] = "707829716", ["[VOTE] Animal"] = "77069224396280", ["Wicked (Popular)"] = "121152442762481", ["Popstar"] = "1212900995", ["NFL"] = "129773241321032", ["OldSchool"] = "10921241244", ["Sneaky"] = "1132469004", ["Elder"] = "10921105765", ["Bubbly"] = "910001910", ["Stylish"] = "616134815", ["Stylized Female"] = "4708186162", ["Vampire"] = "1083443587", ["Superhero"] = "10921293373", ["Toy"] = "782846423", ["Default Retarget"] = "110205622518029", ["Princess"] = "941000007", ["Cowboy"] = "1014384571"
+	},
     ["Swim"] = {
-        ["Sneaky"] = "1132500520", ["Patrol"] = "1151204998", ["Levitation"] = "10921138209", ["Knight"] = "10921125160", ["Pirate"] = "750784579", ["Zombie"] = "616165109", ["Mage"] = "707876443", ["Werewolf"] = "10921340419", ["OldSchool"] = "10921243048", ["Elder"] = "10921108971", ["Vampire"] = "10921324408", ["Toy"] = "10921309319", ["SuperHero"] = "10921295495"
+        ["Sneaky"] = "1132500520", ["Patrol"] = "1151204998", ["Adidas Community"] = "133308483266208", ["Levitation"] = "10921138209", ["Catwalk Glam"] = "134591743181628", ["Knight"] = "10921125160", ["Pirate"] = "750784579", ["Bold"] = "16738339158", ["Sports (Adidas)"] = "18537389531", ["Zombie"] = "616165109", ["Astronaut"] = "891663592", ["Cartoony"] = "10921079380", ["Wicked (Popular)"] = "99384245425157", ["Mage"] = "707876443", ["PopStar"] = "1212998578", ["Unboxed By Amazon"] = "105962919001086", ["R6"] = "12518152696", ["[VOTE] Boat"] = "85689117221382", ["Rthro"] = "10921264784", ["CowBoy"] = "1014406523", ["No Boundaries (Walmart)"] = "18747073181", ["Werewolf"] = "10921340419", ["NFL"] = "132697394189921", ["OldSchool"] = "10921243048", ["Wicked \"Dancing Through Life\""] = "110657013921774", ["Elder"] = "10921108971", ["Bubbly"] = "910028158", ["Robot"] = "10921253142", ["[VOTE] Aura"] = "80645586378736", ["Vampire"] = "10921324408", ["Stylish"] = "10921281000", ["Toy"] = "10921309319", ["SuperHero"] = "10921295495", ["Princess"] = "941018893", ["Confident"] = "1070009914"
     },
     ["Climb"] = {
         ["Robot"] = "616086039", ["Patrol"] = "1148811837", ["Levitation"] = "10921132092", ["Bold"] = "16738332169", ["Zombie"] = "616156119", ["Astronaut"] = "10921032124", ["Cartoony"] = "742636889", ["Ninja"] = "656114359", ["Confident"] = "1069946257", ["Mage"] = "707826056", ["OldSchool"] = "10921229866", ["Sneaky"] = "1132461372", ["Elder"] = "845392038", ["SuperHero"] = "10921286911", ["WereWolf"] = "10921329322", ["Vampire"] = "1083439238", ["Toy"] = "10921300839"
@@ -1420,7 +1420,7 @@ player.CharacterAdded:Connect(function(newChar)
     print("Karakter diperbarui untuk eksekusi saat ini.")
 end)
 
--- 🔹 INTEGRASI LOGIKA FLY SYSTEM BROKEN (MOBILE SUPPORT + NAIK TURUN) 🔹
+-- 🔹 INTEGRASI LOGIKA FLY SYSTEM BROKEN 🔹
 local Flying = false
 local FlySpeed = 50
 local BodyGyro, BodyVelocity
@@ -1434,6 +1434,7 @@ local function StartFlying()
 
     Flying = true
     
+    -- Menggunakan BodyGyro & BodyVelocity sesuai logika SystemBroken
     BodyGyro = Instance.new("BodyGyro", root)
     BodyGyro.P = 9e4
     BodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
@@ -1443,41 +1444,21 @@ local function StartFlying()
     BodyVelocity.Velocity = Vector3.new(0, 0, 0)
     BodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
 
+    -- Loop pergerakan halus (RunService) dari SystemBroken
     FlyConnection = RunService.RenderStepped:Connect(function()
         if Flying and root and hum.Parent then
             local camera = workspace.CurrentCamera
+            local moveDir = Vector3.new(0, 0, 0)
             
-            -- MoveDirection menangkap input dari Joystick HP
-            local moveDir = hum.MoveDirection 
+            -- Kontrol Keyboard
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + camera.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - camera.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - camera.CFrame.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + camera.CFrame.RightVector end
             
-            if moveDir.Magnitude > 0 then
-                -- LOGIKA NAIK TURUN:
-                -- Mengalikan arah input analog dengan CFrame kamera agar bisa naik/turun sesuai pandangan
-                local direction = (camera.CFrame.Rotation * Vector3.new(
-                    (UserInputService:IsKeyDown(Enum.KeyCode.D) and 1 or 0) - (UserInputService:IsKeyDown(Enum.KeyCode.A) and 1 or 0),
-                    0,
-                    (UserInputService:IsKeyDown(Enum.KeyCode.S) and 1 or 0) - (UserInputService:IsKeyDown(Enum.KeyCode.W) and 1 or 0)
-                ))
-
-                -- Jika di HP, direction dihitung dari MoveDirection yang disesuaikan dengan rotasi kamera
-                if moveDir.Magnitude > 0 then
-                    BodyVelocity.Velocity = camera.CFrame:VectorToWorldSpace(Vector3.new(
-                        moveDir.X, 
-                        moveDir.Y, -- Ini akan tetap 0 dari MoveDirection standar
-                        -moveDir.Magnitude -- Memberikan daya dorong maju
-                    )).Unit * FlySpeed
-                    
-                    -- Penyesuaian khusus agar benar-benar mengikuti arah kamera (Vertical)
-                    local camLook = camera.CFrame.LookVector
-                    BodyVelocity.Velocity = camLook * (moveDir.Magnitude * FlySpeed)
-                end
-            else
-                -- Hover stabil jika tidak ada input
-                BodyVelocity.Velocity = Vector3.new(0, 0.1, 0)
-            end
-            
+            BodyVelocity.Velocity = moveDir * FlySpeed
             BodyGyro.CFrame = camera.CFrame
-            hum.PlatformStand = true
+            hum.PlatformStand = true -- Mematikan animasi agar tidak goyang (Sama seperti SystemBroken)
         end
     end)
 end
@@ -1492,18 +1473,19 @@ local function StopFlying()
     end
 end
 
--- Tombol tetap sama sesuai permintaan
+-- Menambahkan tombol ke tab Movement (⚡) di script Anda
 if movementTabFrame then
     local flyBtn = AddScriptButton("Fly: OFF", function()
         if not Flying then
             StartFlying()
-            ShowNotification("Fly Activated (Vertical Analog)")
+            ShowNotification("Fly Activated (SystemBroken Mode)")
         else
             StopFlying()
             ShowNotification("Fly Deactivated")
         end
     end, movementTabFrame)
 
+    -- Loop kecil untuk update teks tombol secara otomatis
     task.spawn(function()
         while task.wait(0.2) do
             if flyBtn then
