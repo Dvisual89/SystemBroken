@@ -1439,58 +1439,46 @@ local function ToggleFly()
 
         hum.PlatformStand = true -- Mencegah karakter jatuh
 
-        -- Loop Pergerakan (Pemisahan Logika PC & HP)
-        task.spawn(function()
-            while Flying and task.wait() do
-                local direction = Vector3.new(0, 0, 0)
-                
-                if UserInputService.TouchEnabled then
-                    -- 📱 KHUSUS HP (Sistem Analog)
-                    local moveDir = hum.MoveDirection
-                    
-                    if moveDir.Magnitude > 0 then
-                        -- Ambil arah kamera HANYA saat analog digerakkan
-                        local camLook = Camera.CFrame.LookVector
-                        local camRight = Camera.CFrame.RightVector
-                        
-                        -- Mengunci kalkulasi arah agar stabil
-                        -- Analog Atas = Maju ke arah pandangan kamera
-                        -- Analog Kiri/Kanan = Geser (Strafe)
-                        direction = (camLook * -moveDir.Z) + (camRight * moveDir.X)
-                        
-                        -- [PENTING] Update rotasi karakter HANYA saat bergerak
-                        -- Ini mencegah karakter "goyang" saat kamu hanya putar kamera sambil diam
-                        BodyGyro.CFrame = CFrame.new(root.Position, root.Position + direction)
-                    else
-                        -- Jika tidak digerakkan, karakter tetap melayang diam di tempat
-                        direction = Vector3.new(0, 0, 0)
-                    end
-                else
-                    -- 💻 KHUSUS PC (Sistem Keyboard WASD)
-                    if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                        direction = direction + Camera.CFrame.LookVector
-                    elseif UserInputService:IsKeyDown(Enum.KeyCode.S) then
-                        direction = direction - Camera.CFrame.LookVector
-                    end
-                    
-                    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-                        direction = direction + Camera.CFrame.RightVector
-                    elseif UserInputService:IsKeyDown(Enum.KeyCode.A) then
-                        direction = direction - Camera.CFrame.RightVector
-                    end
-                end
-
-                -- Eksekusi Gerakan Final
-                if direction.Magnitude > 0 then
-                    BodyVelocity.Velocity = direction.Unit * FlySpeed
-                else
-                    BodyVelocity.Velocity = Vector3.new(0, 0, 0)
-                end
-                
-                -- Karakter selalu menghadap arah kamera
-                BodyGyro.CFrame = Camera.CFrame
-            end
+        -- Loop Pergerakan (Kunci agar W=Maju, S=Mundur, A=Kiri, D=Kanan)
+task.spawn(function()
+    while Flying and task.wait() do
+        -- Kita tidak pakai hum.MoveDirection di sini agar kontrol PC 100% akurat
+        -- Kita ambil input mentah dari keyboard/joystick melalui fungsi internal Roblox
+        local direction = Vector3.new(0, 0, 0)
+        
+        -- Deteksi Input Maju/Mundur (W/S)
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+            direction = direction + Camera.CFrame.LookVector
+        elseif UserInputService:IsKeyDown(Enum.KeyCode.S) then
+            direction = direction - Camera.CFrame.LookVector
         end
+        
+        -- Deteksi Input Kanan/Kiri (A/D)
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+            direction = direction + Camera.CFrame.RightVector
+        elseif UserInputService:IsKeyDown(Enum.KeyCode.A) then
+            direction = direction - Camera.CFrame.RightVector
+        end
+
+        -- Support untuk Mobile (Joystick)
+        -- Jika tidak ada tombol keyboard ditekan, gunakan MoveDirection (untuk HP)
+        if direction.Magnitude == 0 and hum.MoveDirection.Magnitude > 0 then
+            local moveDir = hum.MoveDirection
+            -- Kalkulasi khusus HP agar Joystick tetap mengikuti arah kamera
+            direction = (Camera.CFrame.RightVector * moveDir.X) + (Camera.CFrame.LookVector * -moveDir.Z)
+        end
+
+        -- Eksekusi Pergerakan
+        if direction.Magnitude > 0 then
+            BodyVelocity.Velocity = direction.Unit * FlySpeed
+        else
+            BodyVelocity.Velocity = Vector3.new(0, 0, 0)
+        end
+        
+        -- Badan karakter selalu mengikuti rotasi kamera
+        BodyGyro.CFrame = Camera.CFrame
+    end
+end)
 
         ShowNotification("Fly: ON")
     else
