@@ -571,14 +571,14 @@ local AnimationData = {
         ["Robot"] = "616090535", ["Patrol"] = "1148811837", ["Adidas Community"] = "75290611992385", ["Levitation"] = "616008936", ["Catwalk Glam"] = "116936326516985", ["Knight"] = "910016857", ["Pirate"] = "750782230", ["Bold"] = "16738336650", ["Sports (Adidas)"] = "18537380791", ["Zombie"] = "616161997", ["Astronaut"] = "891627522", ["Cartoony"] = "742637942", ["Ninja"] = "656117878", ["Confident"] = "1069984524", ["Wicked \"Dancing Through Life\""] = "78508480717326", ["Unboxed By Amazon"] = "121454505477205", ["R6"] = "12520880485", ["R15 Reanimated"] = "4211219390", ["Ghost"] = "616008936", ["Rthro"] = "10921263860", ["No Boundaries (Walmart)"] = "18747069148", ["Werewolf"] = "1083218792", ["Cowboy"] = "1014394726", ["UGC"] = "91788124131212", ["[VOTE] Animal"] = "131203832825082", ["Popstar"] = "1212954642", ["Mage"] = "10921149743", ["Sneaky"] = "1132489853", ["Superhero"] = "10921294559", ["Elder"] = "10921107367", ["(UGC) Retro"] = "139390570947836", ["NFL"] = "119846112151352", ["OldSchool"] = "10921242013", ["Stylized Female"] = "4708188025", ["Stylish"] = "616139451", ["Bubbly"] = "910016857", ["[VOTE] Float"] = "75611679208549", ["[VOTE] Aura"] = "93382302369459", ["Vampire"] = "1083455352", ["Wicked (Popular)"] = "104325245285198", ["Toy"] = "10921308158", ["Default Retarget"] = "117150377950987", ["Princess"] = "941008832", ["[UGC] happy"] = "72388373557525"
     },
     ["Fall"] = {
-        ["Robot"] = "616087089", ["Patrol"] = "1148863382", ["Adidas Community"] = "98600215928904", ["Levitation"] = "616005863", ["Catwalk Glam"] = "92294537340807", ["Knight"] = "10921122579", ["Pirate"] = "750780242", ["Bold"] = "16738333171", ["Sports (Adidas)"] = "18537367238", ["Zombie"] = "616157476", ["Astronaut"] = "891617961", ["Cartoony"] = "742637151", ["Ninja"] = "656115606", ["Confident"] = "1069973677", ["Wicked \"Dancing Through Life\""] = "78147885297412", ["Unboxed By Amazon"] = "94788218468396", ["R6"] = "12520972571", ["[UGC] skydiving"] = "102674302534126", ["R15 Reanimated"] = "4211216152", ["Rthro"] = "10921262864", ["No Boundaries (Walmart)"] = "18747062535", ["Werewolf"] = "1083189019", ["[VOTE] TPose"] = "139027266704971", ["Mage"] = "707829716", ["[VOTE] Animal"] = "77069224396280", ["Wicked (Popular)"] = "121152442762481", ["Popstar"] = "1212900995", ["NFL"] = "129773241321032", ["OldSchool"] = "10921241244", ["Sneaky"] = "1132469004", ["Elder"] = "10921105765", ["Bubbly"] = "910001910", ["Stylish"] = "616134815", ["Stylized Female"] = "4708186162", ["Vampire"] = "1083443587", ["Superhero"] = "10921293373", ["Toy"] = "782846423", ["Default Retarget"] = "110205622518029", ["Princess"] = "941000007", ["Cowboy"] = "1014384571"
-	},
+        ["Robot"] = "616087089", ["Patrol"] = "1148863382", ["Levitation"] = "616005863", ["Pirate"] = "750780242", ["Zombie"] = "616157476", ["Astronaut"] = "891617961", ["Cartoony"] = "742637151", ["Ninja"] = "656115606", ["Confident"] = "1069973677", ["R15 Reanimated"] = "4211216152", ["Werewolf"] = "1083189019", ["Mage"] = "707829716", ["OldSchool"] = "10921241244", ["Sneaky"] = "1132469004", ["Elder"] = "10921105765", ["Bubbly"] = "910001910", ["Vampire"] = "1083443587", ["Superhero"] = "10921293373", ["Toy"] = "782846423", ["Princess"] = "941000007", ["Cowboy"] = "1014384571"
+    },
     ["Swim"] = {
-        ["Sneaky"] = "1132500520", ["Patrol"] = "1151204998", ["Adidas Community"] = "133308483266208", ["Levitation"] = "10921138209", ["Catwalk Glam"] = "134591743181628", ["Knight"] = "10921125160", ["Pirate"] = "750784579", ["Bold"] = "16738339158", ["Sports (Adidas)"] = "18537389531", ["Zombie"] = "616165109", ["Astronaut"] = "891663592", ["Cartoony"] = "10921079380", ["Wicked (Popular)"] = "99384245425157", ["Mage"] = "707876443", ["PopStar"] = "1212998578", ["Unboxed By Amazon"] = "105962919001086", ["R6"] = "12518152696", ["[VOTE] Boat"] = "85689117221382", ["Rthro"] = "10921264784", ["CowBoy"] = "1014406523", ["No Boundaries (Walmart)"] = "18747073181", ["Werewolf"] = "10921340419", ["NFL"] = "132697394189921", ["OldSchool"] = "10921243048", ["Wicked \"Dancing Through Life\""] = "110657013921774", ["Elder"] = "10921108971", ["Bubbly"] = "910028158", ["Robot"] = "10921253142", ["[VOTE] Aura"] = "80645586378736", ["Vampire"] = "10921324408", ["Stylish"] = "10921281000", ["Toy"] = "10921309319", ["SuperHero"] = "10921295495", ["Princess"] = "941018893", ["Confident"] = "1070009914"
+        ["Sneaky"] = "1132500520", ["Patrol"] = "1151204998", ["Levitation"] = "10921138209", ["Knight"] = "10921125160", ["Pirate"] = "750784579", ["Zombie"] = "616165109", ["Mage"] = "707876443", ["Werewolf"] = "10921340419", ["OldSchool"] = "10921243048", ["Elder"] = "10921108971", ["Vampire"] = "10921324408", ["Toy"] = "10921309319", ["SuperHero"] = "10921295495"
     },
     ["Climb"] = {
-        ["Robot"] = "616086039", ["Patrol"] = "1148811837", ["Adidas Community"] = "88763136693023", ["Levitation"] = "10921132092", ["Catwalk Glam"] = "119377220967554", ["Knight"] = "10921125160", ["[VOTE] Animal"] = "124810859712282", ["Bold"] = "16738332169", ["Sports (Adidas)"] = "18537363391", ["Zombie"] = "616156119", ["Astronaut"] = "10921032124", ["Cartoony"] = "742636889", ["Ninja"] = "656114359", ["Confident"] = "1069946257", ["Wicked \"Dancing Through Life\""] = "129447497744818", ["Unboxed By Amazon"] = "121145883950231", ["R6"] = "12520982150", ["Ghost"] = "616003713", ["Rthro"] = "10921257536", ["CowBoy"] = "1014380606", ["No Boundaries (Walmart)"] = "18747060903", ["Mage"] = "707826056", ["[VOTE] sticky"] = "77520617871799", ["Reanimated R15"] = "4211214992", ["Popstar"] = "1213044953", ["(UGC) Retro"] = "121075390792786", ["NFL"] = "134630013742019", ["OldSchool"] = "10921229866", ["Sneaky"] = "1132461372", ["Elder"] = "845392038", ["Stylized Female"] = "4708184253", ["Stylish"] = "10921271391", ["SuperHero"] = "10921286911", ["WereWolf"] = "10921329322", ["Vampire"] = "1083439238", ["Toy"] = "10921300839", ["Wicked (Popular)"] = "131326830509784", ["Princess"] = "940996062", ["[VOTE] Rope"] = "134977367563514"
-	},
+        ["Robot"] = "616086039", ["Patrol"] = "1148811837", ["Levitation"] = "10921132092", ["Bold"] = "16738332169", ["Zombie"] = "616156119", ["Astronaut"] = "10921032124", ["Cartoony"] = "742636889", ["Ninja"] = "656114359", ["Confident"] = "1069946257", ["Mage"] = "707826056", ["OldSchool"] = "10921229866", ["Sneaky"] = "1132461372", ["Elder"] = "845392038", ["SuperHero"] = "10921286911", ["WereWolf"] = "10921329322", ["Vampire"] = "1083439238", ["Toy"] = "10921300839"
+    }
 }
 
 --- --- 🔹 FUNGSI APPLY UNIVERSAL (SMART DETECTION) 🔹 --- ---
@@ -1426,54 +1426,50 @@ local FlySpeed = 50
 local BodyGyro, BodyVelocity
 local FlyConnection
 
-local function ToggleFly()
-    FlyActive = not FlyActive
+local function StartFlying()
     local char = player.Character
-    local hum = char and char:FindFirstChildOfClass("Humanoid")
     local root = char and char:FindFirstChild("HumanoidRootPart")
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    if not root or not hum then return end
 
-    if FlyActive and root and hum then
-        -- Setup Fisika Terbang
-        bv = Instance.new("BodyVelocity", root)
-        bv.MaxForce = Vector3.new(1e4, 1e4, 1e4)
-        bv.Velocity = Vector3.new(0, 0, 0)
+    Flying = true
+    
+    -- Menggunakan BodyGyro & BodyVelocity sesuai logika SystemBroken
+    BodyGyro = Instance.new("BodyGyro", root)
+    BodyGyro.P = 9e4
+    BodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+    BodyGyro.CFrame = root.CFrame
 
-        bg = Instance.new("BodyGyro", root)
-        bg.MaxTorque = Vector3.new(1e4, 1e4, 1e4)
-        bg.CFrame = root.CFrame
+    BodyVelocity = Instance.new("BodyVelocity", root)
+    BodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    BodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
 
-        hum.PlatformStand = true -- Mematikan animasi jalan agar tidak kaku
-
-        -- LOOP UTAMA PERGERAKAN (BAGIAN PENTING UNTUK ANALOG HP)
-        task.spawn(function()
-            while FlyActive do
-                local dt = task.wait()
-                [cite_start]-- MoveDirection mendeteksi Analog HP & Keyboard secara otomatis [cite: 1, 13]
-                local moveDir = hum.MoveDirection 
-                local camCF = workspace.CurrentCamera.CFrame
-                
-                bg.CFrame = camCF -- Karakter menghadap ke arah kamera
-
-                if moveDir.Magnitude > 0 then
-                    -- Menghitung arah terbang berdasarkan analog dan kamera
-                    local direction = (camCF.LookVector * moveDir.Z) + (camCF.RightVector * moveDir.X)
-                    bv.Velocity = direction.Unit * FlySpeed
-                else
-                    -- Berhenti jika analog dilepas
-                    bv.Velocity = Vector3.new(0, 0, 0)
-                end
-            end
+    -- Loop pergerakan halus (RunService) dari SystemBroken
+    FlyConnection = RunService.RenderStepped:Connect(function()
+        if Flying and root and hum.Parent then
+            local camera = workspace.CurrentCamera
+            local moveDir = Vector3.new(0, 0, 0)
             
-            -- Bersihkan saat Fly dimatikan
-            if bv then bv:Destroy() end
-            if bg then bg:Destroy() end
-            hum.PlatformStand = false
-        end)
-        
-        ShowNotification("Fly: ON")
-    else
-        FlyActive = false
-        ShowNotification("Fly: OFF")
+            -- Kontrol Keyboard
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + camera.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - camera.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - camera.CFrame.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + camera.CFrame.RightVector end
+            
+            BodyVelocity.Velocity = moveDir * FlySpeed
+            BodyGyro.CFrame = camera.CFrame
+            hum.PlatformStand = true -- Mematikan animasi agar tidak goyang (Sama seperti SystemBroken)
+        end
+    end)
+end
+
+local function StopFlying()
+    Flying = false
+    if FlyConnection then FlyConnection:Disconnect() end
+    if BodyGyro then BodyGyro:Destroy() end
+    if BodyVelocity then BodyVelocity:Destroy() end
+    if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+        player.Character:FindFirstChildOfClass("Humanoid").PlatformStand = false
     end
 end
 
