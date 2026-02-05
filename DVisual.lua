@@ -1439,47 +1439,43 @@ local function ToggleFly()
 
         hum.PlatformStand = true -- Mencegah karakter jatuh
 
-        -- 🚀 LOOP PERGERAKAN PAKSA (ANTI-KAMERA SERET)
+        -- 🚀 LOOP PERGERAKAN (BODYGYRO MENGIKUTI KAMERA - ANTI SERET MOBILE)
         task.spawn(function()
             while Flying and task.wait() do
                 local finalDirection = Vector3.new(0, 0, 0)
                 
-                -- PAKSA MATIKAN AUTO-ROTATE (Kunci agar kamera tidak ikut analog)
+                -- WAJIB: Matikan AutoRotate agar sistem dasar Roblox tidak memaksa kamera berputar
                 hum.AutoRotate = false 
 
+                -- Ambil CFrame kamera sekali saja per frame untuk sinkronisasi
+                local camCF = Camera.CFrame
+                
                 if UserInputService.TouchEnabled then
-                    -- 📱 LOGIKA HP (SANGAT PAKSA)
+                    -- 📱 LOGIKA HP (Analog Kiri)
                     local moveDir = hum.MoveDirection
-                    
                     if moveDir.Magnitude > 0 then
-                        local camCF = Camera.CFrame
-                        -- 1. Tentukan arah gerak murni berdasarkan pandangan kamera
+                        -- Analog Atas = Maju ke arah kamera, dst.
                         finalDirection = (camCF.RightVector * moveDir.X) + (camCF.LookVector * -moveDir.Z)
-                        
-                        -- 2. PAKSA BodyGyro diam ke satu arah (Utara) agar tidak memicu rotasi kamera
-                        -- Kita gunakan CFrame statis agar kamera tetap "Stay"
-                        BodyGyro.CFrame = CFrame.new(root.Position, root.Position + Vector3.new(0, 0, -5))
                     end
                 else
                     -- 💻 LOGIKA PC (WASD)
-                    hum.AutoRotate = true -- Aktifkan kembali untuk PC agar normal
-                    
                     if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                        finalDirection = finalDirection + Camera.CFrame.LookVector
+                        finalDirection = finalDirection + camCF.LookVector
                     elseif UserInputService:IsKeyDown(Enum.KeyCode.S) then
-                        finalDirection = finalDirection - Camera.CFrame.LookVector
+                        finalDirection = finalDirection - camCF.LookVector
                     end
                     if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-                        finalDirection = finalDirection + Camera.CFrame.RightVector
+                        finalDirection = finalDirection + camCF.RightVector
                     elseif UserInputService:IsKeyDown(Enum.KeyCode.A) then
-                        finalDirection = finalDirection - Camera.CFrame.RightVector
+                        finalDirection = finalDirection - camCF.RightVector
                     end
-                    
-                    -- Di PC, biarkan karakter mengikuti kamera
-                    BodyGyro.CFrame = Camera.CFrame
                 end
 
-                -- ⚙️ EKSEKUSI GERAKAN (WAJIB PAKAI VARIABEL finalDirection)
+                -- 🔄 UPDATE BODYGYRO (HP & PC SAMA: MENGIKUTI KAMERA)
+                -- Kita gunakan CFrame.lookAt agar lebih stabil daripada langsung menyamakan CFrame
+                BodyGyro.CFrame = CFrame.lookAt(root.Position, root.Position + camCF.LookVector)
+
+                -- ⚙️ EKSEKUSI GERAKAN FINAL
                 if finalDirection.Magnitude > 0 then
                     BodyVelocity.Velocity = finalDirection.Unit * FlySpeed
                 else
@@ -1487,7 +1483,7 @@ local function ToggleFly()
                 end
             end
             
-            -- Saat fly dimatikan, kembalikan auto-rotate
+            -- Saat fly mati, kembalikan AutoRotate
             hum.AutoRotate = true
         end)
 
