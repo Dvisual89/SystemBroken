@@ -1451,20 +1451,14 @@ local function ToggleFly()
                     if moveDir.Magnitude > 0 then
                         local camCF = Camera.CFrame
                         
-                        -- Tentukan arah terbang (W/S/A/D)
-                        local flyDirection = (camCF.RightVector * moveDir.X) + (camCF.LookVector * -moveDir.Z)
+                        -- Kita gunakan variabel 'direction' (tanpa 'local') 
+                        -- agar bisa dibaca oleh eksekusi Velocity di bawah
+                        direction = (camCF.RightVector * moveDir.X) + (camCF.LookVector * -moveDir.Z)
                         
-                        -- EKSEKUSI GERAK (Hanya Posisi)
-                        BodyVelocity.Velocity = flyDirection.Unit * FlySpeed
-                        
-                        -- 🛑 PAKSA: JANGAN UPDATE GYRO SAMA SEKALI
-                        -- Agar kamera tidak berputar, BodyGyro HARUS dikunci ke satu arah statis
-                        -- Kita kunci agar karakter selalu menghadap ke arah "Utara" map atau posisi tegak saja
-                        BodyGyro.CFrame = CFrame.new(root.Position, root.Position + Vector3.new(0, 0, -1)) 
+                        -- PAKSA BodyGyro diam (Menghadap depan saja agar kamera tidak terseret)
+                        BodyGyro.CFrame = CFrame.new(root.Position, root.Position + Vector3.new(0, 0, -5))
                     else
-                        BodyVelocity.Velocity = Vector3.new(0, 0, 0)
-                        -- Saat berhenti, kunci rotasi agar tetap tegak
-                        BodyGyro.CFrame = CFrame.new(root.Position, root.Position + Vector3.new(0, 0, -1))
+                        direction = Vector3.new(0, 0, 0)
                     end
                 else
                     -- 💻 KHUSUS PC (Sistem Keyboard WASD)
