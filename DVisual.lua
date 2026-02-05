@@ -1442,7 +1442,6 @@ local function ToggleFly()
         -- 🚀 LOOP PERGERAKAN FINAL (SINKRON & ANTI-KAMERA SERET)
         task.spawn(function()
             while Flying and task.wait() do
-                -- 1. Inisialisasi variabel arah agar tidak 'nil'
                 local finalDirection = Vector3.new(0, 0, 0)
                 
                 if UserInputService.TouchEnabled then
@@ -1450,15 +1449,15 @@ local function ToggleFly()
                     local moveDir = hum.MoveDirection
                     if moveDir.Magnitude > 0 then
                         local camCF = Camera.CFrame
-                        -- Menghitung arah berdasarkan Analog + Kamera
+                        -- Menghitung arah terbang berdasarkan Analog + Kamera
                         finalDirection = (camCF.RightVector * moveDir.X) + (camCF.LookVector * -moveDir.Z)
                         
-                        -- 🛑 PAKSA MOBILE: BodyGyro dikunci ke depan (Utara Map) 
-                        -- supaya kamera kamu TIDAK BERPUTAR/TERSERET saat analog kiri digerakkan
+                        -- ✅ PAKSA: BodyGyro tetap aktif di HP tapi kaku ke satu arah (Utara)
+                        -- Ini kunci agar analog kiri tidak memutar kamera
                         BodyGyro.CFrame = CFrame.new(root.Position, root.Position + Vector3.new(0, 0, -5))
                     end
                 else
-                    -- 💻 LOGIKA PC (WASD) - BodyGyro Tetap Aktif
+                    -- 💻 LOGIKA PC (WASD)
                     if UserInputService:IsKeyDown(Enum.KeyCode.W) then
                         finalDirection = finalDirection + Camera.CFrame.LookVector
                     elseif UserInputService:IsKeyDown(Enum.KeyCode.S) then
@@ -1474,7 +1473,7 @@ local function ToggleFly()
                     BodyGyro.CFrame = Camera.CFrame
                 end
 
-                -- 2. EKSEKUSI GERAKAN FINAL
+                -- ⚙️ EKSEKUSI FINAL
                 if finalDirection.Magnitude > 0 then
                     BodyVelocity.Velocity = finalDirection.Unit * FlySpeed
                 else
