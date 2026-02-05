@@ -1441,44 +1441,36 @@ local function ToggleFly()
 
         -- Loop Pergerakan (Kunci agar W=Maju, S=Mundur, A=Kiri, D=Kanan)
 task.spawn(function()
-    while Flying and task.wait() do
-        -- Kita tidak pakai hum.MoveDirection di sini agar kontrol PC 100% akurat
-        -- Kita ambil input mentah dari keyboard/joystick melalui fungsi internal Roblox
-        local direction = Vector3.new(0, 0, 0)
-        
-        -- Deteksi Input Maju/Mundur (W/S)
-        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-            direction = direction + Camera.CFrame.LookVector
-        elseif UserInputService:IsKeyDown(Enum.KeyCode.S) then
-            direction = direction - Camera.CFrame.LookVector
-        end
-        
-        -- Deteksi Input Kanan/Kiri (A/D)
-        if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-            direction = direction + Camera.CFrame.RightVector
-        elseif UserInputService:IsKeyDown(Enum.KeyCode.A) then
-            direction = direction - Camera.CFrame.RightVector
-        end
-
-        -- Support untuk Mobile (Joystick)
-        -- Jika tidak ada tombol keyboard ditekan, gunakan MoveDirection (untuk HP)
-        if direction.Magnitude == 0 and hum.MoveDirection.Magnitude > 0 then
-            local moveDir = hum.MoveDirection
-            -- Kalkulasi khusus HP agar Joystick tetap mengikuti arah kamera
-            direction = (Camera.CFrame.RightVector * moveDir.X) + (Camera.CFrame.LookVector * -moveDir.Z)
-        end
-
-        -- Eksekusi Pergerakan
-        if direction.Magnitude > 0 then
-            BodyVelocity.Velocity = direction.Unit * FlySpeed
-        else
-            BodyVelocity.Velocity = Vector3.new(0, 0, 0)
-        end
-        
-        -- Badan karakter selalu mengikuti rotasi kamera
-        BodyGyro.CFrame = Camera.CFrame
-    end
-end)
+            while Flying and task.wait() do
+                local moveDir = hum.MoveDirection -- Membaca Input Joystick HP
+                
+                if moveDir.Magnitude > 0 then
+                    local camCF = Camera.CFrame
+                    
+                    -- LOGIKA ANALOG HP:
+                    -- moveDir.Z bernilai NEGATIF saat analog ditarik ke ATAS (Maju)
+                    -- moveDir.Z bernilai POSITIF saat analog ditarik ke BAWAH (Mundur)
+                    -- moveDir.X bernilai NEGATIF saat analog ditarik ke KIRI
+                    -- moveDir.X bernilai POSITIF saat analog ditarik ke KANAN
+                    
+                    -- Kita proyeksikan ke Kamera:
+                    local lookVector = camCF.LookVector
+                    local rightVector = camCF.RightVector
+                    
+                    -- Rumus final agar: 
+                    -- Analog Atas = Maju ke arah kamera, Bawah = Mundur, dst.
+                    local direction = (rightVector * moveDir.X) + (lookVector * -moveDir.Z)
+                    
+                    BodyVelocity.Velocity = direction.Unit * FlySpeed
+                else
+                    -- Jika analog dilepas, karakter diam di udara
+                    BodyVelocity.Velocity = Vector3.new(0, 0, 0)
+                end
+                
+                -- Supaya karakter selalu menghadap ke depan layar (tidak pusing)
+                BodyGyro.CFrame = Camera.CFrame
+            end
+        end)
 
         ShowNotification("Fly: ON")
     else
