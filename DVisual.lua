@@ -1462,17 +1462,6 @@ local function StartFlying()
         end
     end)
 end
-
-local function StopFlying()
-    Flying = false
-    if FlyConnection then FlyConnection:Disconnect() end
-    if BodyGyro then BodyGyro:Destroy() end
-    if BodyVelocity then BodyVelocity:Destroy() end
-    if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
-        player.Character:FindFirstChildOfClass("Humanoid").PlatformStand = false
-    end
-end
-
 -- Menambahkan tombol ke tab Movement (⚡) di script Anda
 if movementTabFrame then
     local flyBtn = AddScriptButton("Fly: OFF", function()
