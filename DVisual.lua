@@ -1426,50 +1426,54 @@ local FlySpeed = 50
 local BodyGyro, BodyVelocity
 local FlyConnection
 
-local function StartFlying()
+local function ToggleFly()
+    FlyActive = not FlyActive
     local char = player.Character
-    local root = char and char:FindFirstChild("HumanoidRootPart")
     local hum = char and char:FindFirstChildOfClass("Humanoid")
-    if not root or not hum then return end
+    local root = char and char:FindFirstChild("HumanoidRootPart")
 
-    Flying = true
-    
-    -- Menggunakan BodyGyro & BodyVelocity sesuai logika SystemBroken
-    BodyGyro = Instance.new("BodyGyro", root)
-    BodyGyro.P = 9e4
-    BodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-    BodyGyro.CFrame = root.CFrame
+    if FlyActive and root and hum then
+        -- Setup Fisika Terbang
+        bv = Instance.new("BodyVelocity", root)
+        bv.MaxForce = Vector3.new(1e4, 1e4, 1e4)
+        bv.Velocity = Vector3.new(0, 0, 0)
 
-    BodyVelocity = Instance.new("BodyVelocity", root)
-    BodyVelocity.Velocity = Vector3.new(0, 0, 0)
-    BodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+        bg = Instance.new("BodyGyro", root)
+        bg.MaxTorque = Vector3.new(1e4, 1e4, 1e4)
+        bg.CFrame = root.CFrame
 
-    -- Loop pergerakan halus (RunService) dari SystemBroken
-    FlyConnection = RunService.RenderStepped:Connect(function()
-        if Flying and root and hum.Parent then
-            local camera = workspace.CurrentCamera
-            local moveDir = Vector3.new(0, 0, 0)
+        hum.PlatformStand = true -- Mematikan animasi jalan agar tidak kaku
+
+        -- LOOP UTAMA PERGERAKAN (BAGIAN PENTING UNTUK ANALOG HP)
+        task.spawn(function()
+            while FlyActive do
+                local dt = task.wait()
+                [cite_start]-- MoveDirection mendeteksi Analog HP & Keyboard secara otomatis [cite: 1, 13]
+                local moveDir = hum.MoveDirection 
+                local camCF = workspace.CurrentCamera.CFrame
+                
+                bg.CFrame = camCF -- Karakter menghadap ke arah kamera
+
+                if moveDir.Magnitude > 0 then
+                    -- Menghitung arah terbang berdasarkan analog dan kamera
+                    local direction = (camCF.LookVector * moveDir.Z) + (camCF.RightVector * moveDir.X)
+                    bv.Velocity = direction.Unit * FlySpeed
+                else
+                    -- Berhenti jika analog dilepas
+                    bv.Velocity = Vector3.new(0, 0, 0)
+                end
+            end
             
-            -- Kontrol Keyboard
-            if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + camera.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - camera.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - camera.CFrame.RightVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + camera.CFrame.RightVector end
-            
-            BodyVelocity.Velocity = moveDir * FlySpeed
-            BodyGyro.CFrame = camera.CFrame
-            hum.PlatformStand = true -- Mematikan animasi agar tidak goyang (Sama seperti SystemBroken)
-        end
-    end)
-end
-
-local function StopFlying()
-    Flying = false
-    if FlyConnection then FlyConnection:Disconnect() end
-    if BodyGyro then BodyGyro:Destroy() end
-    if BodyVelocity then BodyVelocity:Destroy() end
-    if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
-        player.Character:FindFirstChildOfClass("Humanoid").PlatformStand = false
+            -- Bersihkan saat Fly dimatikan
+            if bv then bv:Destroy() end
+            if bg then bg:Destroy() end
+            hum.PlatformStand = false
+        end)
+        
+        ShowNotification("Fly: ON")
+    else
+        FlyActive = false
+        ShowNotification("Fly: OFF")
     end
 end
 
