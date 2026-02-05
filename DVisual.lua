@@ -612,6 +612,7 @@ local AnimationData = {
         ["Default Retarget"] = "117150377950987",
         ["Princess"] = "941008832",
         ["[UGC] happy"] = "72388373557525"
+    },
     ["Fall"] = {
         ["Robot"] = "616087089", ["Patrol"] = "1148863382", ["Levitation"] = "616005863", ["Pirate"] = "750780242", ["Zombie"] = "616157476", ["Astronaut"] = "891617961", ["Cartoony"] = "742637151", ["Ninja"] = "656115606", ["Confident"] = "1069973677", ["R15 Reanimated"] = "4211216152", ["Werewolf"] = "1083189019", ["Mage"] = "707829716", ["OldSchool"] = "10921241244", ["Sneaky"] = "1132469004", ["Elder"] = "10921105765", ["Bubbly"] = "910001910", ["Vampire"] = "1083443587", ["Superhero"] = "10921293373", ["Toy"] = "782846423", ["Princess"] = "941000007", ["Cowboy"] = "1014384571"
     },
