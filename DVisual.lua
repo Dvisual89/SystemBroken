@@ -1423,56 +1423,83 @@ end)
 -- 🔹 INTEGRASI LOGIKA FLY SYSTEM BROKEN 🔹
 local Flying = false
 local FlySpeed = 50
-local BodyGyro, BodyVelocity
+local BodyVelocity, BodyGyro
 local FlyConnection
 
 local function StartFlying()
     local char = player.Character
-    local root = char and char:FindFirstChild("HumanoidRootPart")
-    local hum = char and char:FindFirstChildOfClass("Humanoid")
-    if not root or not hum then return end
-
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    
+    local root = char.HumanoidRootPart
     Flying = true
     
-    -- Menggunakan BodyGyro & BodyVelocity sesuai logika SystemBroken
-    BodyGyro = Instance.new("BodyGyro", root)
-    BodyGyro.P = 9e4
-    BodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-    BodyGyro.CFrame = root.CFrame
-
-    BodyVelocity = Instance.new("BodyVelocity", root)
+    BodyVelocity = Instance.new("BodyVelocity")
+    BodyVelocity.MaxForce = Vector3.new(1e6, 1e6, 1e6)
     BodyVelocity.Velocity = Vector3.new(0, 0, 0)
-    BodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-
-    -- Loop pergerakan halus (RunService) dari SystemBroken
-    FlyConnection = RunService.RenderStepped:Connect(function()
-        if Flying and root and hum.Parent then
-            local camera = workspace.CurrentCamera
-            local moveDir = Vector3.new(0, 0, 0)
+    BodyVelocity.Parent = root
+    
+    BodyGyro = Instance.new("BodyGyro")
+    BodyGyro.MaxTorque = Vector3.new(1e6, 1e6, 1e6)
+    BodyGyro.CFrame = root.CFrame
+    BodyGyro.Parent = root
+    
+    char.Humanoid.PlatformStand = true
+    
+    task.spawn(function()
+        while Flying and char:Parent() do
+            local cameraCFrame = workspace.CurrentCamera.CFrame
+            local moveDirection = Vector3.new(0, 0, 0)
             
-            -- Kontrol Keyboard
-            if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + camera.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - camera.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - camera.CFrame.RightVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + camera.CFrame.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                moveDirection = moveDirection + cameraCFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                moveDirection = moveDirection - cameraCFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                moveDirection = moveDirection - cameraCFrame.RightVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                moveDirection = moveDirection + cameraCFrame.RightVector
+            end
             
-            BodyVelocity.Velocity = moveDir * FlySpeed
-            BodyGyro.CFrame = camera.CFrame
-            hum.PlatformStand = true -- Mematikan animasi agar tidak goyang (Sama seperti SystemBroken)
+            BodyVelocity.Velocity = moveDirection * FlySpeed
+            BodyGyro.CFrame = cameraCFrame
+            task.wait()
         end
     end)
+end
+
+local function StopFlying()
+    Flying = false
+    local char = player.Character
+    if char then
+        char.Humanoid.PlatformStand = false
+        if BodyVelocity then BodyVelocity:Destroy() end
+        if BodyGyro then BodyGyro:Destroy() end
+    end
 end
 -- Menambahkan tombol ke tab Movement (⚡) di script Anda
 if movementTabFrame then
     local flyBtn = AddScriptButton("Fly: OFF", function()
-        if not Flying then
-            StartFlying()
-            ShowNotification("Fly Activated (SystemBroken Mode)")
-        else
+        if Flying then
             StopFlying()
-            ShowNotification("Fly Deactivated")
+            ShowNotification("Fly: OFF")
+        else
+            StartFlying()
+            ShowNotification("Fly: ON")
         end
     end, movementTabFrame)
+	
+	task.spawn(function()
+        while task.wait(0.2) do
+            if flyBtn then
+                flyBtn.Text = Flying and "Fly: ON" or "Fly: OFF"
+                flyBtn.BackgroundColor3 = Flying and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(40, 40, 40)
+            end
+        end
+    end)
+end
 
     -- Loop kecil untuk update teks tombol secara otomatis
     task.spawn(function()
