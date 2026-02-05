@@ -1446,19 +1446,33 @@ local function ToggleFly()
                 
                 if UserInputService.TouchEnabled then
                     -- 📱 KHUSUS HP (Sistem Analog)
+                    Paham, saya mengerti masalahnya. Di Infinite Yield, saat kamu terbang, kamera biasanya tetap bebas digerakkan sendiri tanpa memaksakan karakter berputar mengikuti kamera secara kaku, kecuali jika kamu sedang bergerak.
+
+Masalah "konflik sumbu" saat kamera diputar terjadi karena BodyGyro terus menerus memaksa karakter menghadap ke arah kamera (Camera.CFrame), yang pada perangkat mobile sering kali membuat kontrol terasa "bertabrakan" antara jempol kiri (analog) dan jempol kanan (putar layar).
+
+Berikut adalah kode yang dipaksa agar analog tetap konsisten dan kamera tidak mengganggu arah terbangmu:
+
+Lua
+                if UserInputService.TouchEnabled then
+                    -- 📱 KHUSUS HP (Sistem Fly Anti-Konflik / IY Style)
                     local moveDir = hum.MoveDirection
                     
                     if moveDir.Magnitude > 0 then
-                        -- IY Fly Style: Mengonversi MoveDirection ke World Space secara presisi
-                        -- Ini memastikan Analog Atas = Maju, Analog Bawah = Mundur 
-                        -- tanpa konflik sumbu meskipun kamera diputar-putar.
+                        -- Ambil arah kamera HANYA saat analog digerakkan
+                        local camLook = Camera.CFrame.LookVector
+                        local camRight = Camera.CFrame.RightVector
                         
-                        local look = Camera.CFrame.LookVector
-                        local right = Camera.CFrame.RightVector
+                        -- Mengunci kalkulasi arah agar stabil
+                        -- Analog Atas = Maju ke arah pandangan kamera
+                        -- Analog Kiri/Kanan = Geser (Strafe)
+                        direction = (camLook * -moveDir.Z) + (camRight * moveDir.X)
                         
-                        -- Perhitungan pergerakan 3D yang stabil
-                        -- Kita memproyeksikan pergerakan analog langsung ke orientasi kamera
-                        direction = (look * -moveDir.Z) + (right * moveDir.X)
+                        -- [PENTING] Update rotasi karakter HANYA saat bergerak
+                        -- Ini mencegah karakter "goyang" saat kamu hanya putar kamera sambil diam
+                        BodyGyro.CFrame = CFrame.new(root.Position, root.Position + direction)
+                    else
+                        -- Jika tidak digerakkan, karakter tetap melayang diam di tempat
+                        direction = Vector3.new(0, 0, 0)
                     end
                 else
                     -- 💻 KHUSUS PC (Sistem Keyboard WASD)
