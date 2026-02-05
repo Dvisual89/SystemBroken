@@ -1447,11 +1447,21 @@ local function ToggleFly()
                 if UserInputService.TouchEnabled then
                     -- 📱 KHUSUS HP (Sistem Analog)
                     local moveDir = hum.MoveDirection
+                    
                     if moveDir.Magnitude > 0 then
-                        -- Analog Atas = Maju ke arah kamera (-moveDir.Z)
-                        -- Analog Bawah = Mundur
-                        -- Analog Kiri/Kanan = Menyamping
-                        direction = (Camera.CFrame.RightVector * moveDir.X) + (Camera.CFrame.LookVector * -moveDir.Z)
+                        -- Ambil referensi arah kamera SAAT analog digerakkan saja
+                        local camCF = Camera.CFrame
+                        
+                        -- Kalkulasi arah terbang
+                        direction = (camCF.RightVector * moveDir.X) + (camCF.LookVector * -moveDir.Z)
+                        
+                        -- PAKSA: BodyGyro hanya mengikuti arah terbang (direction)
+                        -- Ini membuat kamera bebas diputar tanpa karakter ikut berputar aneh
+                        BodyGyro.CFrame = CFrame.new(root.Position, root.Position + direction)
+                    else
+                        -- Jika analog dilepas, hentikan gerakan
+                        direction = Vector3.new(0, 0, 0)
+                        -- Saat diam, BodyGyro tetap di posisi terakhir agar tidak pusing
                     end
                 else
                     -- 💻 KHUSUS PC (Sistem Keyboard WASD)
