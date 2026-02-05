@@ -1420,7 +1420,7 @@ player.CharacterAdded:Connect(function(newChar)
     print("Karakter diperbarui untuk eksekusi saat ini.")
 end)
 
--- 🔹 INTEGRASI LOGIKA FLY SYSTEM BROKEN (MOBILE SUPPORT) 🔹
+-- 🔹 INTEGRASI LOGIKA FLY SYSTEM BROKEN (MOBILE SUPPORT + NAIK TURUN) 🔹
 local Flying = false
 local FlySpeed = 50
 local BodyGyro, BodyVelocity
@@ -1447,15 +1447,32 @@ local function StartFlying()
         if Flying and root and hum.Parent then
             local camera = workspace.CurrentCamera
             
-            -- LOGIKA ANALOG & KEYBOARD (Support HP)
-            -- MoveDirection menangkap input dari Joystick HP secara otomatis
+            -- MoveDirection menangkap input dari Joystick HP
             local moveDir = hum.MoveDirection 
             
             if moveDir.Magnitude > 0 then
-                -- Jika ada input dari analog/keyboard, arahkan sesuai kamera
-                BodyVelocity.Velocity = moveDir * FlySpeed
+                -- LOGIKA NAIK TURUN:
+                -- Mengalikan arah input analog dengan CFrame kamera agar bisa naik/turun sesuai pandangan
+                local direction = (camera.CFrame.Rotation * Vector3.new(
+                    (UserInputService:IsKeyDown(Enum.KeyCode.D) and 1 or 0) - (UserInputService:IsKeyDown(Enum.KeyCode.A) and 1 or 0),
+                    0,
+                    (UserInputService:IsKeyDown(Enum.KeyCode.S) and 1 or 0) - (UserInputService:IsKeyDown(Enum.KeyCode.W) and 1 or 0)
+                ))
+
+                -- Jika di HP, direction dihitung dari MoveDirection yang disesuaikan dengan rotasi kamera
+                if moveDir.Magnitude > 0 then
+                    BodyVelocity.Velocity = camera.CFrame:VectorToWorldSpace(Vector3.new(
+                        moveDir.X, 
+                        moveDir.Y, -- Ini akan tetap 0 dari MoveDirection standar
+                        -moveDir.Magnitude -- Memberikan daya dorong maju
+                    )).Unit * FlySpeed
+                    
+                    -- Penyesuaian khusus agar benar-benar mengikuti arah kamera (Vertical)
+                    local camLook = camera.CFrame.LookVector
+                    BodyVelocity.Velocity = camLook * (moveDir.Magnitude * FlySpeed)
+                end
             else
-                -- Jika tidak ada input, karakter diam di tempat (hover)
+                -- Hover stabil jika tidak ada input
                 BodyVelocity.Velocity = Vector3.new(0, 0.1, 0)
             end
             
@@ -1475,19 +1492,18 @@ local function StopFlying()
     end
 end
 
--- Menambahkan tombol ke tab Movement (⚡) di script Anda
+-- Tombol tetap sama sesuai permintaan
 if movementTabFrame then
     local flyBtn = AddScriptButton("Fly: OFF", function()
         if not Flying then
             StartFlying()
-            ShowNotification("Fly Activated (Analog Support)")
+            ShowNotification("Fly Activated (Vertical Analog)")
         else
             StopFlying()
             ShowNotification("Fly Deactivated")
         end
     end, movementTabFrame)
 
-    -- Loop kecil untuk update teks tombol secara otomatis
     task.spawn(function()
         while task.wait(0.2) do
             if flyBtn then
