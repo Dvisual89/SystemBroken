@@ -1439,51 +1439,47 @@ local function ToggleFly()
 
         hum.PlatformStand = true -- Mencegah karakter jatuh
 
-        -- Loop Pergerakan (Pemisahan Logika PC & HP)
+        -- 🚀 LOOP PERGERAKAN FINAL (SINKRON & ANTI-KAMERA SERET)
         task.spawn(function()
             while Flying and task.wait() do
-                local direction = Vector3.new(0, 0, 0)
+                -- 1. Inisialisasi variabel arah agar tidak 'nil'
+                local finalDirection = Vector3.new(0, 0, 0)
                 
                 if UserInputService.TouchEnabled then
-                    -- 📱 KHUSUS HP (Sistem Analog)
+                    -- 📱 LOGIKA MOBILE (HP)
                     local moveDir = hum.MoveDirection
-                    
                     if moveDir.Magnitude > 0 then
                         local camCF = Camera.CFrame
+                        -- Menghitung arah berdasarkan Analog + Kamera
+                        finalDirection = (camCF.RightVector * moveDir.X) + (camCF.LookVector * -moveDir.Z)
                         
-                        -- Kita gunakan variabel 'direction' (tanpa 'local') 
-                        -- agar bisa dibaca oleh eksekusi Velocity di bawah
-                        direction = (camCF.RightVector * moveDir.X) + (camCF.LookVector * -moveDir.Z)
-                        
-                        -- PAKSA BodyGyro diam (Menghadap depan saja agar kamera tidak terseret)
+                        -- 🛑 PAKSA MOBILE: BodyGyro dikunci ke depan (Utara Map) 
+                        -- supaya kamera kamu TIDAK BERPUTAR/TERSERET saat analog kiri digerakkan
                         BodyGyro.CFrame = CFrame.new(root.Position, root.Position + Vector3.new(0, 0, -5))
-                    else
-                        direction = Vector3.new(0, 0, 0)
                     end
                 else
-                    -- 💻 KHUSUS PC (Sistem Keyboard WASD)
+                    -- 💻 LOGIKA PC (WASD) - BodyGyro Tetap Aktif
                     if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                        direction = direction + Camera.CFrame.LookVector
+                        finalDirection = finalDirection + Camera.CFrame.LookVector
                     elseif UserInputService:IsKeyDown(Enum.KeyCode.S) then
-                        direction = direction - Camera.CFrame.LookVector
+                        finalDirection = finalDirection - Camera.CFrame.LookVector
+                    end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                        finalDirection = finalDirection + Camera.CFrame.RightVector
+                    elseif UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                        finalDirection = finalDirection - Camera.CFrame.RightVector
                     end
                     
-                    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-                        direction = direction + Camera.CFrame.RightVector
-                    elseif UserInputService:IsKeyDown(Enum.KeyCode.A) then
-                        direction = direction - Camera.CFrame.RightVector
-                    end
+                    -- ✅ KHUSUS PC: BodyGyro selalu mengikuti kemana kamera menghadap
+                    BodyGyro.CFrame = Camera.CFrame
                 end
 
-                -- Eksekusi Gerakan Final
-                if direction.Magnitude > 0 then
-                    BodyVelocity.Velocity = direction.Unit * FlySpeed
+                -- 2. EKSEKUSI GERAKAN FINAL
+                if finalDirection.Magnitude > 0 then
+                    BodyVelocity.Velocity = finalDirection.Unit * FlySpeed
                 else
                     BodyVelocity.Velocity = Vector3.new(0, 0, 0)
                 end
-                
-                -- Karakter selalu menghadap arah kamera
-                BodyGyro.CFrame = Camera.CFrame
             end
         end)
 
