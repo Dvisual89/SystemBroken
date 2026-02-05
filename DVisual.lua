@@ -1449,23 +1449,22 @@ local function ToggleFly()
                     local moveDir = hum.MoveDirection
                     
                     if moveDir.Magnitude > 0 then
-                        -- Ambil arah kamera HANYA untuk referensi arah (LookVector & RightVector)
                         local camCF = Camera.CFrame
                         
-                        -- Kalkulasi arah terbang (Maju/Mundur/Kiri/Kanan)
-                        -- Kita gunakan variabel lokal agar tidak bentrok
+                        -- Tentukan arah terbang (W/S/A/D)
                         local flyDirection = (camCF.RightVector * moveDir.X) + (camCF.LookVector * -moveDir.Z)
                         
-                        -- EKSEKUSI GERAK (Velocity)
+                        -- EKSEKUSI GERAK (Hanya Posisi)
                         BodyVelocity.Velocity = flyDirection.Unit * FlySpeed
                         
-                        -- ❌ PAKSA MATI: JANGAN PERNAH UPDATE GYRO DI SINI
-                        -- Kita biarkan BodyGyro.CFrame tetap di posisi terakhirnya atau 
-                        -- setel ke nilai statis agar tidak menarik kamera.
-                        -- BodyGyro.CFrame = BodyGyro.CFrame (Jangan diubah)
+                        -- 🛑 PAKSA: JANGAN UPDATE GYRO SAMA SEKALI
+                        -- Agar kamera tidak berputar, BodyGyro HARUS dikunci ke satu arah statis
+                        -- Kita kunci agar karakter selalu menghadap ke arah "Utara" map atau posisi tegak saja
+                        BodyGyro.CFrame = CFrame.new(root.Position, root.Position + Vector3.new(0, 0, -1)) 
                     else
-                        -- Jika analog dilepas, berhenti total
                         BodyVelocity.Velocity = Vector3.new(0, 0, 0)
+                        -- Saat berhenti, kunci rotasi agar tetap tegak
+                        BodyGyro.CFrame = CFrame.new(root.Position, root.Position + Vector3.new(0, 0, -1))
                     end
                 else
                     -- 💻 KHUSUS PC (Sistem Keyboard WASD)
