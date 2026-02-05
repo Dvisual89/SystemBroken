@@ -1439,35 +1439,43 @@ local function ToggleFly()
 
         hum.PlatformStand = true -- Mencegah karakter jatuh
 
-        -- Loop Pergerakan (Kunci agar W=Maju, S=Mundur, A=Kiri, D=Kanan)
-task.spawn(function()
+        -- Loop Pergerakan (Pemisahan Logika PC & HP)
+        task.spawn(function()
             while Flying and task.wait() do
-                local moveDir = hum.MoveDirection -- Membaca Input Joystick HP
+                local direction = Vector3.new(0, 0, 0)
                 
-                if moveDir.Magnitude > 0 then
-                    local camCF = Camera.CFrame
+                if UserInputService.TouchEnabled then
+                    -- 📱 KHUSUS HP (Sistem Analog)
+                    local moveDir = hum.MoveDirection
+                    if moveDir.Magnitude > 0 then
+                        -- Analog Atas = Maju ke arah kamera (-moveDir.Z)
+                        -- Analog Bawah = Mundur
+                        -- Analog Kiri/Kanan = Menyamping
+                        direction = (Camera.CFrame.RightVector * moveDir.X) + (Camera.CFrame.LookVector * -moveDir.Z)
+                    end
+                else
+                    -- 💻 KHUSUS PC (Sistem Keyboard WASD)
+                    if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                        direction = direction + Camera.CFrame.LookVector
+                    elseif UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                        direction = direction - Camera.CFrame.LookVector
+                    end
                     
-                    -- LOGIKA ANALOG HP:
-                    -- moveDir.Z bernilai NEGATIF saat analog ditarik ke ATAS (Maju)
-                    -- moveDir.Z bernilai POSITIF saat analog ditarik ke BAWAH (Mundur)
-                    -- moveDir.X bernilai NEGATIF saat analog ditarik ke KIRI
-                    -- moveDir.X bernilai POSITIF saat analog ditarik ke KANAN
-                    
-                    -- Kita proyeksikan ke Kamera:
-                    local lookVector = camCF.LookVector
-                    local rightVector = camCF.RightVector
-                    
-                    -- Rumus final agar: 
-                    -- Analog Atas = Maju ke arah kamera, Bawah = Mundur, dst.
-                    local direction = (rightVector * moveDir.X) + (lookVector * -moveDir.Z)
-                    
+                    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                        direction = direction + Camera.CFrame.RightVector
+                    elseif UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                        direction = direction - Camera.CFrame.RightVector
+                    end
+                end
+
+                -- Eksekusi Gerakan Final
+                if direction.Magnitude > 0 then
                     BodyVelocity.Velocity = direction.Unit * FlySpeed
                 else
-                    -- Jika analog dilepas, karakter diam di udara
                     BodyVelocity.Velocity = Vector3.new(0, 0, 0)
                 end
                 
-                -- Supaya karakter selalu menghadap ke depan layar (tidak pusing)
+                -- Karakter selalu menghadap arah kamera
                 BodyGyro.CFrame = Camera.CFrame
             end
         end)
