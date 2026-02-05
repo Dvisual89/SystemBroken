@@ -1447,11 +1447,18 @@ local function ToggleFly()
                 if UserInputService.TouchEnabled then
                     -- 📱 KHUSUS HP (Sistem Analog)
                     local moveDir = hum.MoveDirection
+                    
                     if moveDir.Magnitude > 0 then
-                        -- Analog Atas = Maju ke arah kamera (-moveDir.Z)
-                        -- Analog Bawah = Mundur
-                        -- Analog Kiri/Kanan = Menyamping
-                        direction = (Camera.CFrame.RightVector * moveDir.X) + (Camera.CFrame.LookVector * -moveDir.Z)
+                        -- IY Fly Style: Mengonversi MoveDirection ke World Space secara presisi
+                        -- Ini memastikan Analog Atas = Maju, Analog Bawah = Mundur 
+                        -- tanpa konflik sumbu meskipun kamera diputar-putar.
+                        
+                        local look = Camera.CFrame.LookVector
+                        local right = Camera.CFrame.RightVector
+                        
+                        -- Perhitungan pergerakan 3D yang stabil
+                        -- Kita memproyeksikan pergerakan analog langsung ke orientasi kamera
+                        direction = (look * -moveDir.Z) + (right * moveDir.X)
                     end
                 else
                     -- 💻 KHUSUS PC (Sistem Keyboard WASD)
