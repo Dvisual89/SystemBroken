@@ -1454,8 +1454,12 @@ local function ToggleFly()
                     -- 📱 LOGIKA HP (Analog Kiri)
                     local moveDir = hum.MoveDirection
                     if moveDir.Magnitude > 0 then
-                        -- Analog Atas = Maju ke arah kamera, dst.
-                        finalDirection = (camCF.RightVector * moveDir.X) + (camCF.LookVector * -moveDir.Z)
+                        -- KOREKSI SUMBU:
+                        -- Analog Atas (moveDir.Z < 0) dikalikan LookVector
+                        -- Analog Kanan (moveDir.X > 0) dikalikan RightVector
+                        
+                        -- Gunakan rumus ini untuk memperbaiki arah yang terbalik:
+                        finalDirection = (camCF.LookVector * -moveDir.Z) + (camCF.RightVector * moveDir.X)
                     end
                 else
                     -- 💻 LOGIKA PC (WASD)
