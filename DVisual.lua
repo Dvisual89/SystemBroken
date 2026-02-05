@@ -1449,19 +1449,25 @@ local function ToggleFly()
                     local moveDir = hum.MoveDirection
                     
                     if moveDir.Magnitude > 0 then
-                        -- Ambil referensi arah kamera SAAT analog digerakkan saja
+                        -- 1. Ambil arah kamera HANYA untuk menentukan arah terbang
                         local camCF = Camera.CFrame
+                        local look = camCF.LookVector
+                        local right = camCF.RightVector
                         
-                        -- Kalkulasi arah terbang
-                        direction = (camCF.RightVector * moveDir.X) + (camCF.LookVector * -moveDir.Z)
+                        -- 2. Tentukan arah terbang (Maju/Mundur/Kanan/Kiri)
+                        local moveVec = (look * -moveDir.Z) + (right * moveDir.X)
+                        direction = moveVec
                         
-                        -- PAKSA: BodyGyro hanya mengikuti arah terbang (direction)
-                        -- Ini membuat kamera bebas diputar tanpa karakter ikut berputar aneh
-                        BodyGyro.CFrame = CFrame.new(root.Position, root.Position + direction)
+                        -- 3. PAKSA: BodyGyro hanya mengunci karakter agar tegak/stabil
+                        -- Kita TIDAK menyamakan BodyGyro dengan Camera.CFrame lagi
+                        -- Kita biarkan karakter menghadap ke arah dia terbang saja
+                        BodyGyro.CFrame = CFrame.new(root.Position, root.Position + moveVec)
+                        
+                        BodyVelocity.Velocity = moveVec.Unit * FlySpeed
                     else
-                        -- Jika analog dilepas, hentikan gerakan
+                        -- Jika analog diam, kunci kecepatan di 0
                         direction = Vector3.new(0, 0, 0)
-                        -- Saat diam, BodyGyro tetap di posisi terakhir agar tidak pusing
+                        BodyVelocity.Velocity = Vector3.new(0, 0, 0)
                     end
                 else
                     -- 💻 KHUSUS PC (Sistem Keyboard WASD)
