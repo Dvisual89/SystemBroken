@@ -1490,7 +1490,7 @@ local function ToggleFly()
                 -- Karakter selalu menghadap arah kamera
                 BodyGyro.CFrame = Camera.CFrame
             end
-        end)
+        end
 
         ShowNotification("Fly: ON")
     else
