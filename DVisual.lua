@@ -1449,24 +1449,22 @@ local function ToggleFly()
                     local moveDir = hum.MoveDirection
                     
                     if moveDir.Magnitude > 0 then
-                        -- 1. Ambil arah kamera HANYA untuk menentukan arah terbang
+                        -- Ambil arah kamera HANYA untuk referensi arah (LookVector & RightVector)
                         local camCF = Camera.CFrame
-                        local look = camCF.LookVector
-                        local right = camCF.RightVector
                         
-                        -- 2. Tentukan arah terbang (Maju/Mundur/Kanan/Kiri)
-                        local moveVec = (look * -moveDir.Z) + (right * moveDir.X)
-                        direction = moveVec
+                        -- Kalkulasi arah terbang (Maju/Mundur/Kiri/Kanan)
+                        -- Kita gunakan variabel lokal agar tidak bentrok
+                        local flyDirection = (camCF.RightVector * moveDir.X) + (camCF.LookVector * -moveDir.Z)
                         
-                        -- 3. PAKSA: BodyGyro hanya mengunci karakter agar tegak/stabil
-                        -- Kita TIDAK menyamakan BodyGyro dengan Camera.CFrame lagi
-                        -- Kita biarkan karakter menghadap ke arah dia terbang saja
-                        BodyGyro.CFrame = CFrame.new(root.Position, root.Position + moveVec)
+                        -- EKSEKUSI GERAK (Velocity)
+                        BodyVelocity.Velocity = flyDirection.Unit * FlySpeed
                         
-                        BodyVelocity.Velocity = moveVec.Unit * FlySpeed
+                        -- ❌ PAKSA MATI: JANGAN PERNAH UPDATE GYRO DI SINI
+                        -- Kita biarkan BodyGyro.CFrame tetap di posisi terakhirnya atau 
+                        -- setel ke nilai statis agar tidak menarik kamera.
+                        -- BodyGyro.CFrame = BodyGyro.CFrame (Jangan diubah)
                     else
-                        -- Jika analog diam, kunci kecepatan di 0
-                        direction = Vector3.new(0, 0, 0)
+                        -- Jika analog dilepas, berhenti total
                         BodyVelocity.Velocity = Vector3.new(0, 0, 0)
                     end
                 else
