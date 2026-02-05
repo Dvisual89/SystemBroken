@@ -1446,15 +1446,6 @@ local function ToggleFly()
                 
                 if UserInputService.TouchEnabled then
                     -- 📱 KHUSUS HP (Sistem Analog)
-                    Paham, saya mengerti masalahnya. Di Infinite Yield, saat kamu terbang, kamera biasanya tetap bebas digerakkan sendiri tanpa memaksakan karakter berputar mengikuti kamera secara kaku, kecuali jika kamu sedang bergerak.
-
-Masalah "konflik sumbu" saat kamera diputar terjadi karena BodyGyro terus menerus memaksa karakter menghadap ke arah kamera (Camera.CFrame), yang pada perangkat mobile sering kali membuat kontrol terasa "bertabrakan" antara jempol kiri (analog) dan jempol kanan (putar layar).
-
-Berikut adalah kode yang dipaksa agar analog tetap konsisten dan kamera tidak mengganggu arah terbangmu:
-
-Lua
-                if UserInputService.TouchEnabled then
-                    -- 📱 KHUSUS HP (Sistem Fly Anti-Konflik / IY Style)
                     local moveDir = hum.MoveDirection
                     
                     if moveDir.Magnitude > 0 then
