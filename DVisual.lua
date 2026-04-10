@@ -1566,3 +1566,13 @@ if movementTabFrame then
         end
     end)
 end
+
+-- Tambahkan logika ini di akhir script
+player.CharacterAdded:Connect(function(char)
+    task.wait(1) -- Tunggu script Animate bawaan muncul
+    for category, data in pairs(SavedAnimations) do
+        if data then
+            ApplyInstantAnimation(category, data)
+        end
+    end
+end)
