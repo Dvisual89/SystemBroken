@@ -318,6 +318,11 @@ AddScriptButton("Bring Coil", function()
     ShowNotification("Animation Executed!")
 end)
 
+AddScriptButton("Sambung Kata V3", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Dvisual89/Dvisual/refs/heads/main/Sambung%20Kata%20V3.lua"))()
+    ShowNotification("Animation Executed!")
+end)
+
 AddScriptButton("Remotespy Fayint", function()
     loadstring(game:HttpGet("https://fayintz.my.id/api/loader/Scanner-Remote"))()
     ShowNotification("Animation Executed!")
