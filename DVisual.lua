@@ -18,6 +18,9 @@ local Following = false
 local FollowConnection = nil
 local Headsitting = false
 local HeadsitConnection = nil
+local Flying = false
+local FlySpeed = 50 -- Ini nilai default yang akan diubah oleh UI
+local FlyConnection = nil
 
 local SavedAnimations = {
     ["Idle"] = nil, ["Walk"] = nil, ["Run"] = nil,
@@ -1280,7 +1283,7 @@ followBtn.MouseButton1Click:Connect(function()
     end
 end)
 
---- --- 🔹 ISI TAB MOVEMENT 🔹 --- ---
+-- --- 🔹 ISI TAB MOVEMENT 🔹 ---
 local function CreateMovementSetting(name, min, max, default, callback)
     local container = Instance.new("Frame")
     container.Parent = movementTabFrame
@@ -1305,7 +1308,7 @@ local function CreateMovementSetting(name, min, max, default, callback)
     input.Text = tostring(default)
     input.TextColor3 = Color3.fromRGB(0, 255, 0)
     input.Font = Enum.Font.GothamBold
-    input.PlaceholderText = "Enter value..."
+    input.PlaceholderText = "Input angka..."
     Instance.new("UICorner", input).CornerRadius = UDim.new(0, 6)
 
     input.FocusLost:Connect(function(enter)
@@ -1319,21 +1322,24 @@ local function CreateMovementSetting(name, min, max, default, callback)
     end)
 end
 
--- Walk Speed
+-- 1. Walk Speed
 CreateMovementSetting("Walk Speed", 0, 500, 16, function(v)
-    player.Character.Humanoid.WalkSpeed = v
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.WalkSpeed = v
+    end
 end)
 
--- Jump Power
+-- 2. Jump Power
 CreateMovementSetting("Jump Power", 0, 500, 50, function(v)
-    player.Character.Humanoid.UseJumpPower = true
-    player.Character.Humanoid.JumpPower = v
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.UseJumpPower = true
+        player.Character.Humanoid.JumpPower = v
+    end
 end)
 
--- Fly Speed (Mengatur variabel lokal untuk Fly jika kamu punya script fly)
-local flySpeedValue = 50
+-- 3. Fly Speed (Sinkron dengan variabel FlySpeed)
 CreateMovementSetting("Fly Speed", 0, 1000, 50, function(v)
-    flySpeedValue = v
+    FlySpeed = v -- Sekarang slider ini merubah variabel FlySpeed global
     ShowNotification("Fly Speed set to: " .. v)
 end)
 
@@ -1431,6 +1437,7 @@ local FlySpeed = 50
 local BodyGyro, BodyVelocity
 local FlyConnection
 
+-- --- 🔹 INTEGRASI LOGIKA FLY (SystemBroken Mode) 🔹 ---
 local function StartFlying()
     local char = player.Character
     local root = char and char:FindFirstChild("HumanoidRootPart")
@@ -1439,7 +1446,6 @@ local function StartFlying()
 
     Flying = true
     
-    -- Menggunakan BodyGyro & BodyVelocity sesuai logika SystemBroken
     BodyGyro = Instance.new("BodyGyro", root)
     BodyGyro.P = 9e4
     BodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
@@ -1449,7 +1455,6 @@ local function StartFlying()
     BodyVelocity.Velocity = Vector3.new(0, 0, 0)
     BodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
 
-    -- Loop pergerakan halus (RunService) dari SystemBroken
     FlyConnection = RunService.RenderStepped:Connect(function()
         if Flying and root and hum.Parent then
             local camera = workspace.CurrentCamera
@@ -1461,9 +1466,10 @@ local function StartFlying()
             if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - camera.CFrame.RightVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + camera.CFrame.RightVector end
             
+            -- PENGGUNAAN VARIABEL FLYSPEED YANG SUDAH DIUPDATE SLIDER
             BodyVelocity.Velocity = moveDir * FlySpeed
             BodyGyro.CFrame = camera.CFrame
-            hum.PlatformStand = true -- Mematikan animasi agar tidak goyang (Sama seperti SystemBroken)
+            hum.PlatformStand = true 
         end
     end)
 end
